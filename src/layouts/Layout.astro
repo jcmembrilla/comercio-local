@@ -1,0 +1,40 @@
+---
+import '../styles/global.css'
+import Toast from '../components/Toast.astro'
+
+interface Props {
+  title: string
+  description?: string
+  showGradient?: boolean
+}
+
+const {
+  title,
+  description = 'Comercio Local - Impulsando el comercio artesanal y local',
+  showGradient = true
+} = Astro.props
+const bgClass = showGradient
+  ? 'bg-radial from-[#121212] via-[#0f1411] to-[#0a0a0a] bg-no-repeat bg-cover'
+  : ''
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <title>{title}</title>
+  </head>
+  <body
+    class={`bg-[#121212] text-white min-h-screen font-sans antialiased ${bgClass}`}
+  >
+    <slot />
+    <Toast />
+  </body>
+</html>

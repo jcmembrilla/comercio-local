@@ -1,0 +1,86 @@
+---
+import Layout from '../layouts/Layout.astro'
+import BackButton from '../components/BackButton.astro'
+import Footer from '../components/Footer.astro'
+---
+
+<Layout title="Comercio Local - Nosotros y Normas" showGradient={false}>
+  <main
+    class="max-w-md mx-auto px-6 pt-12 pb-10 flex flex-col min-h-screen justify-between text-gray-300"
+  >
+    <div class="space-y-8">
+      <div
+        class="flex items-center justify-between border-b border-[#2A2A2A] pb-4"
+      >
+        <h1 class="text-2xl font-bold text-white tracking-wide">
+          Sobre la App
+        </h1>
+        <BackButton />
+      </div>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="text-emerald-400">🌱</span> ¿Quiénes somos?
+        </h2>
+        <p class="text-sm leading-relaxed text-gray-400">
+          <strong>Comercio Local</strong> nació con la firme convicción de fortalecer
+          la economía de nuestra localidad. Buscamos visibilizar a los vecinos independientes
+          que ponen su tiempo, esfuerzo y creatividad en producir comidas, artesanías
+          u ofrecer oficios esenciales. Esta plataforma es una ventana directa y sin
+          intermediarios.
+        </p>
+      </section>
+
+      <section id="normas" class="space-y-3 scroll-mt-6 pb-2">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="text-amber-500">🤝</span> Normas de Convivencia
+        </h2>
+        <ul class="text-sm space-y-2 list-disc pl-5 text-gray-400">
+          <li>
+            <strong>Creadores, no revendedores:</strong> El espacio está reservado
+            para productos manufacturados por el propio emprendedor o servicios prestados
+            de manera directa.
+          </li>
+          <li>
+            <strong>Trato cordial:</strong> Las interacciones mediante los enlaces
+            de contacto deben ser respetuosas y transparentes.
+          </li>
+          <li>
+            <strong>Precios claros:</strong> Si se exponen catálogos, se sugiere mantener
+            los valores actualizados para evitar confusiones en la comunidad.
+          </li>
+        </ul>
+      </section>
+
+      <section
+        id="legales"
+        class="space-y-3 scroll-mt-6 bg-[#1E1E1E]/40 p-5 rounded-2xl border border-red-950/30"
+      >
+        <h2 class="text-lg font-bold text-red-400 flex items-center gap-2">
+          <span class="text-red-400">⚖️</span> Términos Legales
+        </h2>
+        <div class="text-xs space-y-3 leading-relaxed text-gray-400">
+          <p>
+            <strong>Deslinde de Responsabilidad:</strong> Comercio Local funciona
+            exclusivamente como un directorio comunitario y cartelera digital de contacto
+            entre particulares. La aplicación no interviene, procesa, ni percibe comisiones
+            por los pagos, envíos o acuerdos pactados entre las partes.
+          </p>
+          <p>
+            <strong>Contenido Prohibido:</strong> Queda terminantemente prohibida
+            la publicación de sustancias ilícitas, medicamentos, armas, réplicas,
+            servicios no regulados o cualquier artículo que infrinja las leyes vigentes.
+          </p>
+          <p>
+            <strong>Moderación Activa:</strong> El administrador de la plataforma
+            se reserva el derecho inequívoco de remover perfiles, suspender cuentas
+            y dar de baja publicaciones que violen estas directrices o reciban reportes
+            fundados por la comunidad vecinal.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <Footer />
+  </main>
+</Layout>

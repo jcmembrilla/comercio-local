@@ -1,0 +1,411 @@
+---
+import Layout from '../layouts/Layout.astro'
+import BackButton from '../components/BackButton.astro'
+import Footer from '../components/Footer.astro'
+import Alert from '../components/Alert.astro'
+import SocialButtons from '../components/SocialButtons.astro'
+import FileUploader from '../components/FileUploader.astro'
+import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
+---
+
+<Layout title="Comercio Local - Registrarse">
+  <main
+    class="max-w-xl mx-auto px-6 pt-10 pb-12 flex flex-col min-h-screen justify-between"
+  >
+    <div class="w-full">
+      <div
+        class="flex items-center justify-between border-b border-[#2A2A2A] pb-4 mb-6"
+      >
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-wide">
+            Comercio Local
+          </h1>
+          <p class="text-xs text-gray-500 mt-1">
+            Sumate a la cartelera independiente de tu localidad
+          </p>
+        </div>
+        <BackButton />
+      </div>
+
+      <div
+        class="bg-[#1E1E1E]/60 p-6 rounded-3xl border border-[#2A2A2A] backdrop-blur-md"
+      >
+        <SocialButtons mode="register" />
+
+        <Alert type="error" id="alerta-registro" />
+
+        <form id="form-registro" class="space-y-6">
+          <div class="space-y-4">
+            <h2
+              class="text-sm font-bold text-emerald-400 uppercase tracking-wider border-b border-[#2A2A2A] pb-1.5"
+            >
+              Datos Comerciales o Profesional
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="nombre_emprendimiento"
+                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                >
+                  Nombre Comercial o Profesional
+                </label>
+                <input
+                  id="nombre_emprendimiento"
+                  type="text"
+                  required
+                  placeholder="Ej: Carlos Albornoz o La Cocina de Mabel"
+                  class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="categoria"
+                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                >
+                  Rubro / Categoría
+                </label>
+                <select
+                  id="categoria"
+                  required
+                  class="w-full bg-[#1E1E1E] text-white px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                >
+                  <option value="" disabled selected>
+                    Selecciona un rubro
+                  </option>
+                  {
+                    CATEGORIAS.map((cat) => (
+                      <option value={cat.value}>{cat.label}</option>
+                    ))
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label
+                  for="descripcion"
+                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider"
+                >
+                  Descripción Breve o Biografía
+                </label>
+                <span
+                  id="char-counter"
+                  class="text-[10px] text-gray-500 font-medium">0 / 150</span
+                >
+              </div>
+              <textarea
+                id="descripcion"
+                required
+                maxlength="150"
+                rows="3"
+                placeholder="Describe qué ofreces o cuál es tu especialidad. Máximo 150 caracteres."
+                class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+              ></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FileUploader id="logo" label="Logo o Avatar (Opcional)" />
+              <FileUploader id="portada" label="Banner de Portada (Opcional)" />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="whatsapp"
+                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                >
+                  WhatsApp de Contacto
+                </label>
+                <input
+                  id="whatsapp"
+                  type="tel"
+                  required
+                  placeholder="Ej: 5491123456789"
+                  class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+                <span class="block text-[10px] text-gray-500 mt-1 pl-1"
+                  >Código de país + número, sin signos + ni guiones.</span
+                >
+              </div>
+
+              <div>
+                <label
+                  for="ciudad"
+                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                >
+                  Localidad / Ciudad
+                </label>
+                <select
+                  id="ciudad"
+                  required
+                  class="w-full bg-[#1E1E1E] text-white px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                >
+                  <option value="" disabled selected>
+                    Selecciona tu localidad
+                  </option>
+                  {
+                    CIUDADES_PREDEFINIDAS.map((city) => (
+                      <option value={city}>{city}</option>
+                    ))
+                  }
+                  <option value="otra">Otra localidad...</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="otra-ciudad-container" class="hidden">
+              <label
+                for="otra_ciudad"
+                class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+              >
+                Nombre de tu Localidad
+              </label>
+              <input
+                id="otra_ciudad"
+                type="text"
+                placeholder="Ingresa tu ciudad o localidad"
+                class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-4 pt-2">
+            <h2
+              class="text-sm font-bold text-emerald-400 uppercase tracking-wider border-b border-[#2A2A2A] pb-1.5"
+            >
+              Credenciales de Acceso
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="email"
+                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                >
+                  Correo Electrónico
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  placeholder="tu@correo.com"
+                  class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="password"
+                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                >
+                  Contraseña
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  placeholder="Mín. 6 caracteres (letras y números)"
+                  class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+                <span class="block text-[10px] text-gray-500 mt-1 pl-1"
+                  >Debe incluir al menos una letra y un número.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-colors active:scale-[0.99] mt-6 cursor-pointer"
+          >
+            Crear mi Cuenta
+          </button>
+        </form>
+      </div>
+
+      <div class="mt-6 text-center text-sm text-gray-400">
+        ¿Ya tenés una cuenta registrada?
+        <a
+          href="/login"
+          class="text-emerald-400 font-semibold underline hover:text-emerald-300 ml-1 transition-colors"
+        >
+          Ingresá acá
+        </a>
+      </div>
+    </div>
+
+    <Footer showLinks={false} />
+  </main>
+</Layout>
+
+<script>
+  import { registrarUsuario, obtenerSesionActiva } from '../utils/storage'
+  import type { CategoriaRubro } from '../utils/constants'
+  import { leerArchivoBase64 } from '../utils/images'
+  import { mostrarError as mostrarErrorUI } from '../utils/ui'
+
+  const sesion = obtenerSesionActiva()
+  if (sesion) window.location.href = '/dashboard'
+
+  const form = document.getElementById('form-registro') as HTMLFormElement
+  const nombreInput = document.getElementById(
+    'nombre_emprendimiento'
+  ) as HTMLInputElement
+  const categoriaSelect = document.getElementById(
+    'categoria'
+  ) as HTMLSelectElement
+  const descripcionInput = document.getElementById(
+    'descripcion'
+  ) as HTMLTextAreaElement
+  const whatsappInput = document.getElementById('whatsapp') as HTMLInputElement
+  const ciudadSelect = document.getElementById('ciudad') as HTMLSelectElement
+  const otraCiudadContainer = document.getElementById(
+    'otra-ciudad-container'
+  ) as HTMLDivElement
+  const otraCiudadInput = document.getElementById(
+    'otra_ciudad'
+  ) as HTMLInputElement
+  const emailInput = document.getElementById('email') as HTMLInputElement
+  const passwordInput = document.getElementById('password') as HTMLInputElement
+  const charCounter = document.getElementById('char-counter') as HTMLSpanElement
+  const alertaError = document.getElementById(
+    'alerta-registro'
+  ) as HTMLDivElement
+  const alertaErrorTexto = document.getElementById(
+    'alerta-registro-texto'
+  ) as HTMLSpanElement
+
+  const inputLogo = document.getElementById('foto_logo') as HTMLInputElement
+  const inputPortada = document.getElementById(
+    'foto_portada'
+  ) as HTMLInputElement
+  const previewLogo = document.getElementById(
+    'preview-logo'
+  ) as HTMLImageElement
+  const previewPortada = document.getElementById(
+    'preview-portada'
+  ) as HTMLImageElement
+  const placeholderLogo = document.getElementById(
+    'placeholder-logo'
+  ) as HTMLDivElement
+  const placeholderPortada = document.getElementById(
+    'placeholder-portada'
+  ) as HTMLDivElement
+
+  let base64Logo = ''
+  let base64Portada = ''
+
+  function mostrarError(msj: string) {
+    mostrarErrorUI(alertaError, alertaErrorTexto, msj)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  inputLogo?.addEventListener('change', async () => {
+    const file = inputLogo.files?.[0]
+    if (!file) return
+    try {
+      base64Logo = await leerArchivoBase64(file)
+      previewLogo.src = base64Logo
+      previewLogo.classList.remove('hidden')
+      placeholderLogo.classList.add('hidden')
+    } catch (err: unknown) {
+      mostrarError(err instanceof Error ? err.message : 'Error desconocido')
+      inputLogo.value = ''
+      base64Logo = ''
+    }
+  })
+
+  inputPortada?.addEventListener('change', async () => {
+    const file = inputPortada.files?.[0]
+    if (!file) return
+    try {
+      base64Portada = await leerArchivoBase64(file)
+      previewPortada.src = base64Portada
+      previewPortada.classList.remove('hidden')
+      placeholderPortada.classList.add('hidden')
+    } catch (err: unknown) {
+      mostrarError(err instanceof Error ? err.message : 'Error desconocido')
+      inputPortada.value = ''
+      base64Portada = ''
+    }
+  })
+
+  ciudadSelect?.addEventListener('change', () => {
+    if (ciudadSelect.value === 'otra') {
+      otraCiudadContainer.classList.remove('hidden')
+      otraCiudadInput.required = true
+      otraCiudadInput.focus()
+    } else {
+      otraCiudadContainer.classList.add('hidden')
+      otraCiudadInput.required = false
+      otraCiudadInput.value = ''
+    }
+  })
+
+  descripcionInput?.addEventListener('input', () => {
+    const len = descripcionInput.value.length
+    charCounter.textContent = `${len} / 150`
+    charCounter.className =
+      len >= 140
+        ? 'text-[10px] text-amber-500 font-bold'
+        : 'text-[10px] text-gray-500 font-medium'
+  })
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    alertaError.classList.add('hidden')
+
+    const nombre = nombreInput.value.trim()
+    const categoria = categoriaSelect.value as CategoriaRubro
+    const descripcion = descripcionInput.value.trim()
+    const whatsapp = whatsappInput.value.trim().replace(/[^\d]/g, '')
+
+    let ciudad = ciudadSelect.value
+    if (ciudad === 'otra') {
+      ciudad = otraCiudadInput.value.trim()
+      if (!ciudad) {
+        mostrarError('Por favor, ingresa el nombre de tu localidad.')
+        return
+      }
+    }
+
+    const email = emailInput.value.trim()
+    const password = passwordInput.value
+
+    if (whatsapp.length < 8) {
+      mostrarError(
+        'Por favor, ingresa un número de WhatsApp válido (solo números con código de país).'
+      )
+      return
+    }
+
+    const tieneLetra = /[a-zA-Z]/.test(password)
+    const tieneNumero = /\d/.test(password)
+    if (password.length < 6 || !tieneLetra || !tieneNumero) {
+      mostrarError(
+        'La contraseña debe tener al menos 6 caracteres e incluir como mínimo una letra y un número.'
+      )
+      passwordInput.focus()
+      return
+    }
+
+    const res = registrarUsuario(email, password, {
+      nombre_emprendimiento: nombre,
+      categoria,
+      descripcion,
+      whatsapp,
+      ciudad,
+      fotoLogo: base64Logo,
+      fotoPortada: base64Portada
+    })
+
+    if (res.success) {
+      window.location.href = '/dashboard'
+    } else {
+      mostrarError(res.message)
+    }
+  })
+</script>

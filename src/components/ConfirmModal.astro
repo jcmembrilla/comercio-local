@@ -1,0 +1,33 @@
+---
+
+---
+
+<div
+  id="confirm-modal"
+  class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+>
+  <div
+    class="bg-[#1E1E1E] border border-[#2A2A2A] rounded-3xl p-6 max-w-sm mx-4 w-full shadow-2xl"
+  >
+    <p
+      id="confirm-modal-message"
+      class="text-gray-200 text-sm mb-6 text-center leading-relaxed"
+    >
+      ¿Estás seguro?
+    </p>
+    <div class="flex gap-3">
+      <button
+        id="confirm-modal-cancel"
+        class="flex-1 bg-[#2A2A2A] hover:bg-[#333] text-gray-300 py-3 rounded-2xl text-sm font-bold transition-all cursor-pointer border border-[#444]"
+      >
+        Cancelar
+      </button>
+      <button
+        id="confirm-modal-accept"
+        class="flex-1 bg-red-600 hover:bg-red-500 text-white py-3 rounded-2xl text-sm font-bold transition-all active:scale-[0.99] cursor-pointer"
+      >
+        Eliminar
+      </button>
+    </div>
+  </div>
+</div>

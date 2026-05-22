@@ -1,0 +1,24 @@
+---
+interface Props {
+  type?: 'error' | 'success'
+  id?: string
+  class?: string
+}
+
+const { type = 'error', id = '' } = Astro.props
+
+const isError = type === 'error'
+const bgClass = isError
+  ? 'bg-red-950/40 border-red-500/50 text-red-300'
+  : 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300'
+const iconClass = isError ? 'text-red-400' : 'text-emerald-400'
+const icon = isError ? '⚠️' : '✓'
+---
+
+<div
+  id={id}
+  class={`hidden ${bgClass} text-xs p-4 rounded-2xl mb-5 flex items-start gap-2.5`}
+>
+  <span class={`${iconClass} font-bold`}>{icon}</span>
+  <span id={`${id}-texto`}>Cargando...</span>
+</div>

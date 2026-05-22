@@ -1,0 +1,500 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import TarjetaComercio from '../components/TarjetaComercio.astro'
+import { CATEGORIAS } from '../utils/constants'
+import type { PerfilComercio } from '../utils/constants'
+
+const publicacionesSemilla: PerfilComercio[] = [
+  {
+    id: 'usr_mabel',
+    email: '',
+    nombre_emprendimiento: 'La Cocina de Mabel',
+    categoria: 'comidas',
+    descripcion: 'Empanadas caseras cortadas a cuchillo y tartas dulces por encargo.',
+    whatsapp: '5491123456789',
+    ciudad: 'Ayacucho',
+    fotoLogo: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=150&auto=format&fit=crop&q=60',
+    fotoPortada: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&auto=format&fit=crop&q=80',
+    productos: []
+  },
+  {
+    id: 'usr_carlos',
+    email: '',
+    nombre_emprendimiento: 'Carlos Albornoz',
+    categoria: 'oficios',
+    descripcion: 'Plomería en general, destapaciones y reparaciones de artefactos del hogar. Urgencias 24hs.',
+    whatsapp: '5491198765432',
+    ciudad: 'Tandil',
+    fotoLogo: '',
+    fotoPortada: '',
+    productos: []
+  },
+  {
+    id: 'usr_esencias',
+    email: '',
+    nombre_emprendimiento: 'Esencias del Alma',
+    categoria: 'artesanias',
+    descripcion: 'Sahumerios artesanales, velas de soja naturales y esencias orgánicas para el hogar.',
+    whatsapp: '5491155555555',
+    ciudad: 'Ayacucho',
+    fotoLogo: 'https://images.unsplash.com/photo-1602928321679-560bb453f190?w=150&auto=format&fit=crop&q=60',
+    fotoPortada: '',
+    productos: []
+  },
+  {
+    id: 'usr_elena',
+    email: '',
+    nombre_emprendimiento: 'Elena Martínez',
+    categoria: 'jardineria',
+    descripcion: 'Mantenimiento de espacios verdes, corte de pasto, poda de árboles y diseño de jardines residenciales.',
+    whatsapp: '5491144444444',
+    ciudad: 'Rauch',
+    fotoLogo: '',
+    fotoPortada: '',
+    productos: []
+  },
+  {
+    id: 'usr_tapestry',
+    email: '',
+    nombre_emprendimiento: 'Taller de Tapices Renacer',
+    categoria: 'artesanias',
+    descripcion: 'Tapices y tejidos artesanales hechos a mano con técnicas tradicionales. Personalización por encargo.',
+    whatsapp: '5491133333333',
+    ciudad: 'Balcarce',
+    fotoLogo: '',
+    fotoPortada: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80',
+    productos: []
+  }
+]
+
+const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random())
+---
+
+<Layout title="Comercio Local - Cartelera Comunitaria">
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 pt-8 pb-10 flex flex-col min-h-screen justify-between">
+    <div>
+      <Header />
+
+      <div class="mb-6 flex gap-2 w-full max-w-lg mx-auto">
+        <input
+          id="buscador"
+          type="text"
+          placeholder="Busca un servicio o producto..."
+          class="w-[75%] bg-[#1E1E1E] text-white placeholder-gray-500 px-4 py-3.5 rounded-2xl border border-[#333] text-base focus:outline-none focus:border-emerald-500 transition-colors"
+        />
+
+        <div class="relative w-[25%]">
+          <select
+            id="filtro-rubro"
+            class="w-full h-full bg-[#1E1E1E] text-gray-300 pl-3 pr-6 py-3.5 rounded-2xl border border-[#333] text-xs font-medium appearance-none focus:outline-none transition-all cursor-pointer text-ellipsis overflow-hidden whitespace-nowrap"
+          >
+            <option value="" disabled selected>Rubro</option>
+            <option value="todas">Todos</option>
+            {CATEGORIAS.map((cat) => (
+              <option value={cat.value}>{cat.label}</option>
+            ))}
+          </select>
+          <div
+            id="icono-select"
+            class="absolute inset-y-0 right-2 flex items-center pointer-events-none text-gray-500 transition-colors"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-4 mb-8 max-w-lg mx-auto">
+        <button
+          id="btn-servicios"
+          class="flex-1 bg-[#1E1E1E] text-white py-3.5 rounded-2xl border border-[#333] text-base font-semibold hover:bg-[#252525] active:scale-[0.98] transition-all cursor-pointer"
+        >
+          Servicios y Oficios
+        </button>
+        <button
+          id="btn-ventas"
+          class="flex-1 bg-[#1E1E1E] text-white py-3.5 rounded-2xl border border-[#333] text-base font-semibold hover:bg-[#252525] active:scale-[0.98] transition-all cursor-pointer"
+        >
+          Ventas y Producción
+        </button>
+      </div>
+
+      <div class="bg-[#1E1E1E]/60 p-5 rounded-3xl border border-[#2A2A2A] mb-3 text-center max-w-lg mx-auto backdrop-blur-md">
+        <p class="text-gray-300 text-sm leading-relaxed">
+          Una cartelera digital para fomentar y facilitar el comercio local,
+          de profesionales y emprendedores independientes de tu localidad.
+          <a
+            href="/nosotros"
+            class="text-emerald-400 font-semibold underline hover:text-emerald-300 ml-1 transition-colors"
+          >
+            Conocé nuestras normas y propósito.
+          </a>
+        </p>
+      </div>
+
+      <div class="w-full pt-2 mb-8 max-w-lg mx-auto">
+        <a
+          href="/registro"
+          class="block w-full bg-white text-black text-center py-3.5 rounded-2xl text-base font-bold hover:bg-gray-200 active:scale-[0.99] transition-all border border-transparent focus:outline-none focus:border-emerald-500"
+        >
+          Crear una cuenta comercial o profesional
+        </a>
+      </div>
+
+      <div class="mb-4">
+        <h2
+          id="titulo-feed"
+          class="text-sm font-semibold tracking-wider text-gray-500 uppercase px-1 pointer-events-none mb-4"
+        >
+          Descubrí en tu localidad
+        </h2>
+
+        <div id="contenedor-feed" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {publicacionesSEO.map((pub) => (
+            <TarjetaComercio perfil={pub} />
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <Footer />
+  </main>
+</Layout>
+
+<script>
+  import {
+    obtenerPublicaciones,
+    obtenerSesionActiva,
+    obtenerUltimaCiudad,
+    guardarUltimaCiudad,
+    obtenerCiudadesActivas
+  } from '../utils/storage'
+  import { COLORES_CATEGORIAS, RESPALDOS_POR_RUBRO } from '../utils/constants'
+  import type { CategoriaRubro } from '../utils/constants'
+
+  const selectorCiudad = document.getElementById(
+    'selector-ciudad-cabecera'
+  ) as HTMLSelectElement
+  const localidadDetectadaTexto = document.getElementById(
+    'localidad-detectada-texto'
+  ) as HTMLParagraphElement
+  const btnAuth = document.getElementById(
+    'btn-auth-cabecera'
+  ) as HTMLAnchorElement
+  const buscador = document.getElementById('buscador') as HTMLInputElement
+  const filtroRubro = document.getElementById('filtro-rubro') as HTMLSelectElement
+  const iconoSelect = document.getElementById('icono-select') as HTMLDivElement
+  const contenedorFeed = document.getElementById(
+    'contenedor-feed'
+  ) as HTMLDivElement
+
+  const btnServicios = document.getElementById(
+    'btn-servicios'
+  ) as HTMLButtonElement
+  const btnVentas = document.getElementById('btn-ventas') as HTMLButtonElement
+
+  let tipoActivo: 'servicios' | 'ventas' | null = null
+
+  const gruposCategorias = {
+    servicios: ['oficios', 'jardineria', 'educacion', 'tecnologia'],
+    ventas: ['comidas', 'artesanias', 'estetica', 'otros']
+  }
+
+  const sesion = obtenerSesionActiva()
+  if (sesion && btnAuth) {
+    btnAuth.href = '/dashboard'
+    btnAuth.className =
+      'text-xs bg-emerald-950/40 border border-emerald-500/50 hover:bg-emerald-900/60 text-emerald-400 font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shrink-0'
+    btnAuth.innerHTML = '👤 Mi Perfil'
+  }
+
+  function poblarSelectorLocalidades() {
+    if (!selectorCiudad) return
+
+    const ciudadesActivas = obtenerCiudadesActivas()
+    const ciudadSeleccionada = obtenerUltimaCiudad()
+
+    selectorCiudad.innerHTML = ''
+
+    const optTodas = document.createElement('option')
+    optTodas.value = 'todas'
+    optTodas.textContent = '📍 Todas las localidades'
+    selectorCiudad.appendChild(optTodas)
+
+    ciudadesActivas.forEach((c) => {
+      const opt = document.createElement('option')
+      opt.value = c
+      opt.textContent = `📍 ${c}`
+      selectorCiudad.appendChild(opt)
+    })
+
+    selectorCiudad.value = ciudadSeleccionada
+
+    actualizarIndicadorLocalidad(ciudadSeleccionada)
+  }
+
+  function actualizarIndicadorLocalidad(ciudad: string) {
+    if (!localidadDetectadaTexto) return
+    if (ciudad === 'todas') {
+      localidadDetectadaTexto.textContent = 'Localidad: Todas'
+    } else {
+      const formatted =
+        ciudad.trim().charAt(0).toUpperCase() + ciudad.trim().slice(1)
+      localidadDetectadaTexto.textContent = `Localidad: ${formatted}`
+    }
+  }
+
+  const publicaciones = obtenerPublicaciones()
+
+  function renderizarFeedCliente() {
+    if (!contenedorFeed) return
+    contenedorFeed.innerHTML = ''
+
+    const ciudadActual = selectorCiudad ? selectorCiudad.value : 'todas'
+    const publicacionesFiltradas = publicaciones.filter((pub) => {
+      if (ciudadActual === 'todas') return true
+      return pub.ciudad.toLowerCase() === ciudadActual.toLowerCase()
+    })
+
+    if (publicacionesFiltradas.length === 0) {
+      contenedorFeed.innerHTML = `
+        <div class="col-span-1 md:col-span-2 text-center py-12 text-gray-400 bg-[#1E1E1E]/40 border border-[#2A2A2A] rounded-3xl p-6">
+          <span class="text-3xl block mb-2">📍</span>
+          <p class="font-bold text-white mb-1">No hay comercios cargados en esta localidad.</p>
+          <p class="text-xs text-gray-500">Sé el primero de tu rubro en registrarse y aparecer acá.</p>
+        </div>
+      `
+      return
+    }
+
+    publicacionesFiltradas.forEach((pub) => {
+      const configColor =
+        COLORES_CATEGORIAS[pub.categoria] || COLORES_CATEGORIAS.otros
+      const iniciales = pub.nombre_emprendimiento
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+      const respaldos =
+        RESPALDOS_POR_RUBRO[pub.categoria] || RESPALDOS_POR_RUBRO.otros
+
+      const urlPortada = pub.fotoPortada || respaldos.portada
+      const urlLogo = pub.fotoLogo
+
+      const htmlAvatar = urlLogo
+        ? `<img src="${urlLogo}" alt="Logo" loading="lazy" class="w-full h-full object-cover shrink-0" />`
+        : `<span class="text-white font-bold text-base">${iniciales}</span>`
+
+      const card = document.createElement('div')
+      card.className = `tarjeta-comercio p-5 rounded-3xl border transition-all flex flex-col justify-between h-full bg-[#1E1E1E]/40 border-[#2A2A2A] text-gray-200 hover:border-[#3a3a3a]`
+      card.setAttribute(
+        'data-nombre',
+        pub.nombre_emprendimiento.toLowerCase()
+      )
+      card.setAttribute('data-categoria', pub.categoria)
+      card.setAttribute(
+        'data-descripcion',
+        pub.descripcion.toLowerCase()
+      )
+
+      card.innerHTML = `
+        <div class="flex flex-col grow">
+          <div class="h-28 -mx-5 -mt-5 rounded-t-3xl overflow-hidden relative mb-12">
+            <img src="${urlPortada}" alt="Portada" loading="lazy" class="w-full h-full object-cover filter brightness-[0.75]" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div class="absolute -bottom-10 left-4 w-18 h-18 rounded-full border-4 border-[#121212] overflow-hidden bg-black flex items-center justify-center shrink-0 shadow-lg">
+              ${htmlAvatar}
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-4 mb-2">
+            <div class="overflow-hidden">
+              <h3 class="text-white font-bold text-base leading-tight truncate">${pub.nombre_emprendimiento}</h3>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="text-[10px] uppercase font-bold tracking-wider ${configColor.text}">${pub.categoria}</span>
+                <span class="text-gray-500 text-[10px]">•</span>
+                <span class="text-[10px] text-gray-300 font-medium">📍 ${pub.ciudad}</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-300 text-xs leading-relaxed mb-5 line-clamp-3 h-10 overflow-hidden">
+            ${pub.descripcion}
+          </p>
+        </div>
+        <a
+          href="/perfil?id=${pub.id}"
+          class="w-full bg-[#1A1A1A] hover:bg-[#252525] border border-[#2E2E2E] hover:border-emerald-500/30 text-white hover:text-emerald-400 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors mb-2 cursor-pointer"
+        >
+          📖 Ver Catálogo y Perfil
+        </a>
+        <a
+          href="https://wa.me/${pub.whatsapp}?text=Hola%20${encodeURIComponent(pub.nombre_emprendimiento)},%20vi%20tu%20perfil%20en%20Comercio%20Local%20y%20me%20interesa%20lo%20que%20ofrecés."
+          target="_blank"
+          rel="noopener noreferrer"
+          class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors active:scale-[0.99] cursor-pointer"
+        >
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 11.948 0c3.179.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.907-11.89 11.907-2.013-.001-3.99-.51-5.772-1.482L0 24zm6.59-4.846c1.63.967 3.56 1.48 5.35 1.481 5.468 0 9.915-4.444 9.918-9.917.002-2.651-1.032-5.143-2.908-7.022C17.07 1.816 14.58 .78 11.948.78c-5.458 0-9.91 4.444-9.914 9.919-.001 1.889.499 3.73 1.447 5.362L2.456 21.23l5.191-1.362z" /></svg>
+          Contactar por WhatsApp
+        </a>
+      `
+
+      contenedorFeed.appendChild(card)
+    })
+
+    filtrarComercios()
+  }
+
+  function mezclarTarjetasEnPantalla() {
+    const contenedor = document.getElementById('contenedor-feed')
+    if (!contenedor) return
+    const arrayTarjetas = Array.from(
+      contenedor.querySelectorAll('.tarjeta-comercio')
+    ) as HTMLDivElement[]
+    arrayTarjetas.sort(() => Math.random() - 0.5)
+    arrayTarjetas.forEach((tarjeta) => {
+      contenedor.appendChild(tarjeta)
+    })
+  }
+
+  function actualizarEstiloSelector() {
+    const valor = filtroRubro.value
+
+    filtroRubro.classList.remove(
+      'bg-emerald-950/40',
+      'border-emerald-500',
+      'text-emerald-400',
+      'bg-slate-900/60',
+      'border-slate-500',
+      'text-slate-300',
+      'bg-amber-950/30',
+      'border-amber-600',
+      'text-amber-400',
+      'bg-teal-950/40',
+      'border-teal-500',
+      'text-teal-400',
+      'bg-rose-950/30',
+      'border-rose-500',
+      'text-rose-400',
+      'bg-indigo-950/30',
+      'border-indigo-500',
+      'text-indigo-400',
+      'bg-cyan-950/30',
+      'border-cyan-500',
+      'text-cyan-400'
+    )
+    filtroRubro.classList.add('bg-[#1E1E1E]', 'text-gray-300', 'border-[#333]')
+    iconoSelect.className =
+      'absolute inset-y-0 right-2 flex items-center pointer-events-none text-gray-500 transition-colors'
+
+    const configColor = COLORES_CATEGORIAS[valor as CategoriaRubro]
+    if (valor && configColor) {
+      filtroRubro.classList.remove(
+        'bg-[#1E1E1E]',
+        'text-gray-300',
+        'border-[#333]'
+      )
+      filtroRubro.classList.add(configColor.bg, configColor.border, configColor.text)
+      iconoSelect.className = `absolute inset-y-0 right-2 flex items-center pointer-events-none ${configColor.text} transition-colors`
+    }
+  }
+
+  function filtrarComercios() {
+    const textoBusqueda = buscador.value.toLowerCase().trim()
+    const rubroSeleccionado = filtroRubro.value
+    const tarjetas = contenedorFeed.querySelectorAll(
+      '.tarjeta-comercio'
+    ) as NodeListOf<HTMLDivElement>
+
+    tarjetas.forEach((tarjeta) => {
+      const nombreComercio = tarjeta.getAttribute('data-nombre') || ''
+      const categoriaComercio = tarjeta.getAttribute('data-categoria') || ''
+      const descripcionComercio =
+        tarjeta.getAttribute('data-descripcion') || ''
+
+      const coincideTexto =
+        nombreComercio.includes(textoBusqueda) ||
+        categoriaComercio.includes(textoBusqueda) ||
+        descripcionComercio.includes(textoBusqueda)
+
+      const coincideRubro =
+        rubroSeleccionado === 'todas' ||
+        rubroSeleccionado === '' ||
+        categoriaComercio === rubroSeleccionado
+
+      let coincideTipoGeneral = true
+      if (tipoActivo) {
+        coincideTipoGeneral =
+          gruposCategorias[tipoActivo].includes(categoriaComercio)
+      }
+
+      if (coincideTexto && coincideRubro && coincideTipoGeneral) {
+        tarjeta.style.display = 'block'
+      } else {
+        tarjeta.style.display = 'none'
+      }
+    })
+  }
+
+  function resetearEstilosBotones() {
+    ;[btnServicios, btnVentas].forEach((btn) => {
+      if (!btn) return
+      btn.classList.remove('bg-white', 'text-black', 'border-white')
+      btn.classList.add('bg-[#1E1E1E]', 'text-white', 'border-[#333]')
+    })
+  }
+
+  function activarEstiloBoton(btn: HTMLButtonElement) {
+    if (!btn) return
+    btn.classList.remove('bg-[#1E1E1E]', 'text-white', 'border-[#333]')
+    btn.classList.add('bg-white', 'text-black', 'border-white')
+  }
+
+  btnServicios?.addEventListener('click', () => {
+    mezclarTarjetasEnPantalla()
+    if (tipoActivo === 'servicios') {
+      tipoActivo = null
+      resetearEstilosBotones()
+    } else {
+      tipoActivo = 'servicios'
+      resetearEstilosBotones()
+      activarEstiloBoton(btnServicios)
+    }
+    filtrarComercios()
+  })
+
+  btnVentas?.addEventListener('click', () => {
+    mezclarTarjetasEnPantalla()
+    if (tipoActivo === 'ventas') {
+      tipoActivo = null
+      resetearEstilosBotones()
+    } else {
+      tipoActivo = 'ventas'
+      resetearEstilosBotones()
+      activarEstiloBoton(btnVentas)
+    }
+    filtrarComercios()
+  })
+
+  buscador?.addEventListener('input', filtrarComercios)
+
+  filtroRubro?.addEventListener('change', () => {
+    mezclarTarjetasEnPantalla()
+    actualizarEstiloSelector()
+    filtrarComercios()
+  })
+
+  selectorCiudad?.addEventListener('change', () => {
+    const seleccion = selectorCiudad.value
+    guardarUltimaCiudad(seleccion)
+    actualizarIndicadorLocalidad(seleccion)
+    renderizarFeedCliente()
+  })
+
+  poblarSelectorLocalidades()
+  renderizarFeedCliente()
+  mezclarTarjetasEnPantalla()
+  actualizarEstiloSelector()
+</script>

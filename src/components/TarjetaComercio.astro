@@ -1,0 +1,101 @@
+---
+import type { PerfilComercio } from '../utils/constants'
+import { COLORES_CATEGORIAS, RESPALDOS_POR_RUBRO } from '../utils/constants'
+import { calcularIniciales, construirLinkWhatsApp } from '../utils/formatters'
+
+interface Props {
+  perfil: PerfilComercio
+}
+
+const { perfil } = Astro.props
+const configColor =
+  COLORES_CATEGORIAS[perfil.categoria] || COLORES_CATEGORIAS.otros
+const respaldos =
+  RESPALDOS_POR_RUBRO[perfil.categoria] || RESPALDOS_POR_RUBRO.otros
+const iniciales = calcularIniciales(perfil.nombre_emprendimiento)
+const urlPortada = perfil.fotoPortada || respaldos.portada
+---
+
+<div
+  class="tarjeta-comercio p-5 rounded-3xl border transition-all flex flex-col justify-between h-full bg-[#1E1E1E]/40 border-[#2A2A2A] text-gray-200 hover:border-[#3a3a3a]"
+  data-nombre={perfil.nombre_emprendimiento.toLowerCase()}
+  data-categoria={perfil.categoria}
+  data-descripcion={perfil.descripcion.toLowerCase()}
+>
+  <div class="flex flex-col grow">
+    <div class="h-28 -mx-5 -mt-5 rounded-t-3xl overflow-hidden relative mb-12">
+      <img
+        src={urlPortada}
+        alt="Portada"
+        loading="lazy"
+        class="w-full h-full object-cover filter brightness-[0.75]"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+      >
+      </div>
+      <div
+        class="absolute -bottom-10 left-4 w-18 h-18 rounded-full border-4 border-[#121212] overflow-hidden bg-black flex items-center justify-center shrink-0 shadow-lg"
+      >
+        {
+          perfil.fotoLogo ? (
+            <img
+              src={perfil.fotoLogo}
+              alt="Logo"
+              loading="lazy"
+              class="w-full h-full object-cover shrink-0"
+            />
+          ) : (
+            <span class="text-white font-bold text-lg">{iniciales}</span>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between gap-4 mb-2">
+      <div class="overflow-hidden">
+        <h3 class="text-white font-bold text-base leading-tight truncate">
+          {perfil.nombre_emprendimiento}
+        </h3>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <span
+            class={`text-[10px] uppercase font-bold tracking-wider ${configColor.text}`}
+          >
+            {perfil.categoria}
+          </span>
+          <span class="text-gray-500 text-[10px]">•</span>
+          <span class="text-[10px] text-gray-300 font-medium">
+            📍 {perfil.ciudad}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <p
+      class="text-gray-300 text-xs leading-relaxed mb-5 line-clamp-3 h-10 overflow-hidden"
+    >
+      {perfil.descripcion}
+    </p>
+  </div>
+
+  <a
+    href={`/perfil?id=${perfil.id}`}
+    class="w-full bg-[#1A1A1A] hover:bg-[#252525] border border-[#2E2E2E] hover:border-emerald-500/30 text-white hover:text-emerald-400 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors mb-2 cursor-pointer"
+  >
+    📖 Ver Catálogo y Perfil
+  </a>
+
+  <a
+    href={construirLinkWhatsApp(perfil.whatsapp, perfil.nombre_emprendimiento)}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors active:scale-[0.99] cursor-pointer"
+  >
+    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+      <path
+        d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 11.948 0c3.179.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.907-11.89 11.907-2.013-.001-3.99-.51-5.772-1.482L0 24zm6.59-4.846c1.63.967 3.56 1.48 5.35 1.481 5.468 0 9.915-4.444 9.918-9.917.002-2.651-1.032-5.143-2.908-7.022C17.07 1.816 14.58 .78 11.948.78c-5.458 0-9.91 4.444-9.914 9.919-.001 1.889.499 3.73 1.447 5.362L2.456 21.23l5.191-1.362z"
+      ></path>
+    </svg>
+    Contactar por WhatsApp
+  </a>
+</div>

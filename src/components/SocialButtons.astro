@@ -1,0 +1,96 @@
+---
+interface Props {
+  mode?: 'login' | 'register'
+}
+
+const { mode = 'login' } = Astro.props
+const title =
+  mode === 'login' ? 'Ingresá rápidamente con' : 'Registrate rápidamente con'
+---
+
+<div class="mb-6 space-y-2.5">
+  <p
+    class="text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5"
+  >
+    {title}
+  </p>
+  <div class="grid grid-cols-3 gap-2.5">
+    <button
+      type="button"
+      class="btn-social-mock flex items-center justify-center gap-1.5 bg-[#1E1E1E] hover:bg-[#252525] border border-[#333] text-gray-300 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all active:scale-[0.98] cursor-pointer"
+      data-provider="Google"
+    >
+      <svg
+        class="w-4 h-4 shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+      Google
+    </button>
+    <button
+      type="button"
+      class="btn-social-mock flex items-center justify-center gap-1.5 bg-[#1E1E1E] hover:bg-[#252525] border border-[#333] text-gray-300 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all active:scale-[0.98] cursor-pointer"
+      data-provider="Facebook"
+    >
+      <svg
+        class="w-4 h-4 shrink-0 text-blue-500 fill-current"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"
+        ></path>
+      </svg>
+      Facebook
+    </button>
+    <button
+      type="button"
+      class="btn-social-mock flex items-center justify-center gap-1.5 bg-[#1E1E1E] hover:bg-[#252525] border border-[#333] text-gray-300 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all active:scale-[0.98] cursor-pointer"
+      data-provider="WhatsApp"
+    >
+      <svg
+        class="w-4 h-4 shrink-0 text-emerald-500 fill-current"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 11.948 0c3.179.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.907-11.89 11.907-2.013-.001-3.99-.51-5.772-1.482L0 24zm6.59-4.846c1.63.967 3.56 1.48 5.35 1.481 5.468 0 9.915-4.444 9.918-9.917.002-2.651-1.032-5.143-2.908-7.022C17.07 1.816 14.58 .78 11.948.78c-5.458 0-9.91 4.444-9.914 9.919-.001 1.889.499 3.73 1.447 5.362L2.456 21.23l5.191-1.362z"
+        ></path>
+      </svg>
+      WhatsApp
+    </button>
+  </div>
+  <div class="flex items-center my-4">
+    <hr class="flex-1 border-[#2A2A2A]" />
+    <span
+      class="px-3 text-[10px] text-gray-500 font-bold uppercase tracking-widest"
+      >{
+        mode === 'login' ? 'o ingresá con correo' : 'o registrate con correo'
+      }</span
+    >
+    <hr class="flex-1 border-[#2A2A2A]" />
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.btn-social-mock').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const provider = (e.currentTarget as HTMLButtonElement).getAttribute(
+        'data-provider'
+      )
+      const toast = (window as any).mostrarToast
+      if (toast) {
+        toast({
+          message: `Iniciar sesión con ${provider} se conectará con el backend definitivo de Comercio Local. Usá el formulario clásico por ahora.`,
+          type: 'info',
+          duration: 4000
+        })
+      }
+    })
+  })
+</script>
