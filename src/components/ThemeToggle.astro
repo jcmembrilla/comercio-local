@@ -1,0 +1,58 @@
+<button
+  id="btn-tema"
+  class="text-sm w-9 h-9 rounded-xl flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+  style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
+  aria-label="Cambiar tema"
+  title="Cambiar tema"
+>
+  <svg
+    id="icono-sol"
+    class="w-4 h-4"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    stroke-width="2"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+    ></path>
+  </svg>
+  <svg
+    id="icono-luna"
+    class="w-4 h-4 hidden"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    stroke-width="2"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+    ></path>
+  </svg>
+</button>
+
+<script>
+  import { obtenerTema, cambiarTema } from '../utils/theme'
+
+  const btn = document.getElementById('btn-tema') as HTMLButtonElement
+  const iconoSol = document.getElementById('icono-sol') as HTMLElement
+  const iconoLuna = document.getElementById('icono-luna') as HTMLElement
+
+  if (btn && iconoSol && iconoLuna) {
+    const tema = obtenerTema()
+    iconoSol.classList.toggle('hidden', tema === 'light')
+    iconoLuna.classList.toggle('hidden', tema === 'dark')
+
+    btn.addEventListener('click', () => {
+      const actual = obtenerTema()
+      const nuevo = actual === 'dark' ? 'light' : 'dark'
+      cambiarTema(nuevo)
+      iconoSol.classList.toggle('hidden', nuevo === 'light')
+      iconoLuna.classList.toggle('hidden', nuevo === 'dark')
+    })
+  }
+</script>

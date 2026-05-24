@@ -7,7 +7,8 @@ const { showLinks = true } = Astro.props
 ---
 
 <footer
-  class="w-full pt-12 pb-2 text-center space-y-1.5 text-xs text-gray-500 tracking-wide"
+  class="w-full pt-12 pb-2 text-center space-y-1.5 text-xs tracking-wide"
+  style="color: var(--tertiary)"
 >
   <p>&copy; 2026 Comercio Local</p>
   {
@@ -15,21 +16,24 @@ const { showLinks = true } = Astro.props
       <div class="flex justify-center gap-4">
         <a
           href="/nosotros"
-          class="hover:text-gray-300 underline transition-colors"
+          class="underline transition-colors"
+          style="color: var(--tertiary)"
         >
           ¿Quiénes somos?
         </a>
-        <span class="text-gray-700">•</span>
+        <span style="color: var(--quaternary)">•</span>
         <a
           href="/nosotros#normas"
-          class="hover:text-gray-300 underline transition-colors"
+          class="underline transition-colors"
+          style="color: var(--tertiary)"
         >
           Normas de convivencia
         </a>
-        <span class="text-gray-700">•</span>
+        <span style="color: var(--quaternary)">•</span>
         <a
           href="/nosotros#legales"
-          class="hover:text-gray-300 underline transition-colors"
+          class="underline transition-colors"
+          style="color: var(--tertiary)"
         >
           Términos legales
         </a>

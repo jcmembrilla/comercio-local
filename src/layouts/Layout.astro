@@ -1,21 +1,17 @@
 ---
 import '../styles/global.css'
 import Toast from '../components/Toast.astro'
+import ThemeToggle from '../components/ThemeToggle.astro'
 
 interface Props {
   title: string
   description?: string
-  showGradient?: boolean
 }
 
 const {
   title,
-  description = 'Comercio Local - Impulsando el comercio artesanal y local',
-  showGradient = true
+  description = 'Comercio Local - Impulsando el comercio artesanal y local'
 } = Astro.props
-const bgClass = showGradient
-  ? 'bg-radial from-[#121212] via-[#0f1411] to-[#0a0a0a] bg-no-repeat bg-cover'
-  : ''
 ---
 
 <!doctype html>
@@ -30,11 +26,26 @@ const bgClass = showGradient
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <title>{title}</title>
+    <script>
+      ;(function () {
+        const t = localStorage.getItem('comercio_local_theme')
+        if (t === 'light') document.documentElement.classList.add('light')
+      })()
+    </script>
   </head>
   <body
-    class={`bg-[#121212] text-white min-h-screen font-sans antialiased ${bgClass}`}
+    class="min-h-screen font-sans antialiased"
+    style="background: var(--body-bg); color: var(--primary)"
   >
+    <div class="fixed top-4 right-4 z-50">
+      <ThemeToggle />
+    </div>
     <slot />
     <Toast />
   </body>
 </html>
+
+<script>
+  import { initTheme } from '../utils/theme'
+  initTheme()
+</script>

@@ -38,7 +38,11 @@
     toast.className = `pointer-events-auto ${bgMap[type]} backdrop-blur-md border text-xs font-semibold px-5 py-3 rounded-2xl shadow-lg flex items-center gap-2.5 transition-all duration-300`
     toast.style.transform = 'translateY(20px)'
     toast.style.opacity = '0'
-    toast.innerHTML = `<span>${iconMap[type]}</span><span>${message}</span>`
+    const iconSpan = document.createElement('span')
+    iconSpan.textContent = iconMap[type]
+    const msgSpan = document.createElement('span')
+    msgSpan.textContent = message
+    toast.append(iconSpan, msgSpan)
 
     container.appendChild(toast)
 

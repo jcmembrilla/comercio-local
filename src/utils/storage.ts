@@ -1,332 +1,255 @@
+import { supabase } from './supabase'
 import type { PerfilComercio, Producto } from './constants'
 import { RUBROS_FOTO_OPCIONAL } from './constants'
 
 export interface UsuarioCuenta extends PerfilComercio {
-  password?: string // Simulación de seguridad para autenticación
+  password?: string
 }
 
-const SEMILLA_PUBLICACIONES: UsuarioCuenta[] = [
-  {
-    id: 'usr_mabel',
-    email: 'mabel@local.com',
-    password: 'mabel123',
-    nombre_emprendimiento: 'La Cocina de Mabel',
-    categoria: 'comidas',
-    descripcion:
-      'Empanadas caseras cortadas a cuchillo y tartas dulces por encargo.',
-    whatsapp: '5491123456789',
-    ciudad: 'Ayacucho',
-    fotoLogo:
-      'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=150&auto=format&fit=crop&q=60',
-    fotoPortada:
-      'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&auto=format&fit=crop&q=80',
-    productos: [
-      {
-        id: 'prod_mabel_1',
-        titulo: 'Torta de chocolate mediana',
-        precio: 5000,
-        foto: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&auto=format&fit=crop&q=60',
-        descripcion:
-          'Torta húmeda de chocolate con doble relleno de dulce de leche.'
-      }
-    ]
-  },
-  {
-    id: 'usr_carlos',
-    email: 'carlos@local.com',
-    password: 'carlos123',
-    nombre_emprendimiento: 'Carlos Albornoz',
-    categoria: 'oficios',
-    descripcion:
-      'Plomería en general, destapaciones y reparaciones de artefactos del hogar. Urgencias 24hs.',
-    whatsapp: '5491198765432',
-    ciudad: 'Tandil',
-    fotoLogo: '',
-    fotoPortada: '',
-    productos: []
-  },
-  {
-    id: 'usr_esencias',
-    email: 'esencias@local.com',
-    password: 'esencias123',
-    nombre_emprendimiento: 'Esencias del Alma',
-    categoria: 'artesanias',
-    descripcion:
-      'Sahumerios artesanales, velas de soja naturales y esencias orgánicas para el hogar.',
-    whatsapp: '5491155555555',
-    ciudad: 'Ayacucho',
-    fotoLogo:
-      'https://images.unsplash.com/photo-1602928321679-560bb453f190?w=150&auto=format&fit=crop&q=60',
-    fotoPortada: '',
-    productos: [
-      {
-        id: 'prod_esencias_1',
-        titulo: 'Pack x10 Sahumerios lavanda',
-        precio: 1500,
-        foto: 'https://images.unsplash.com/photo-1602928321679-560bb453f190?w=500&auto=format&fit=crop&q=60',
-        descripcion:
-          'Sahumerios hechos a mano con aceites esenciales orgánicos.'
-      }
-    ]
-  },
-  {
-    id: 'usr_elena',
-    email: 'elena@local.com',
-    password: 'elena123',
-    nombre_emprendimiento: 'Elena Martínez',
-    categoria: 'jardineria',
-    descripcion:
-      'Mantenimiento de espacios verdes, corte de pasto, poda de árboles y diseño de jardines residenciales.',
-    whatsapp: '5491144444444',
-    ciudad: 'Rauch',
-    fotoLogo: '',
-    fotoPortada: '',
-    productos: []
-  },
-  {
-    id: 'usr_tapestry',
-    email: 'tapices@local.com',
-    password: 'tapices123',
-    nombre_emprendimiento: 'Taller de Tapices Renacer',
-    categoria: 'artesanias',
-    descripcion:
-      'Tapices y tejidos artesanales hechos a mano con técnicas tradicionales. Personalización por encargo.',
-    whatsapp: '5491133333333',
-    ciudad: 'Balcarce',
-    fotoLogo: '',
-    fotoPortada:
-      'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80',
-    productos: [
-      {
-        id: 'prod_tapices_1',
-        titulo: 'Tapiz mediano de lana',
-        precio: 8000,
-        foto: 'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=500&auto=format&fit=crop&q=60',
-        descripcion:
-          'Tapiz decorativo tejido con lana de oveja teñida naturalmente.'
-      }
-    ]
-  }
-]
-
 const STORAGE_KEYS = {
-  DB: 'comercio_local_db_v2', // Versión 2 para evitar conflictos con el esquema anterior
-  SESSION: 'comercio_local_session_v2',
   LAST_CITY: 'comercio_local_last_city_v2'
 }
 
-// Inicializar DB
-export function inicializarDB(): UsuarioCuenta[] {
-  if (typeof window === 'undefined') return SEMILLA_PUBLICACIONES
+// ─── Mappers ────────────────────────────────────────
 
-  const dbRaw = localStorage.getItem(STORAGE_KEYS.DB)
-  if (!dbRaw) {
-    localStorage.setItem(STORAGE_KEYS.DB, JSON.stringify(SEMILLA_PUBLICACIONES))
-    return SEMILLA_PUBLICACIONES
-  }
-  try {
-    return JSON.parse(dbRaw)
-  } catch (e) {
-    console.error('Error leyendo DB local:', e)
-    return SEMILLA_PUBLICACIONES
+function mapRowToPerfil(row: any): PerfilComercio {
+  return {
+    id: row.id,
+    email: row.email || '',
+    nombre_emprendimiento: row.nombre_emprendimiento,
+    categoria: row.categoria,
+    descripcion: row.descripcion || '',
+    whatsapp: row.whatsapp || '',
+    ciudad: row.ciudad || '',
+    direccion: row.direccion || '',
+    lat: row.lat,
+    lng: row.lng,
+    sitio_web: row.sitio_web || '',
+    historia: row.historia || '',
+    fotoLogo: row.foto_logo || '',
+    fotoPortada: row.foto_portada || '',
+    productos: (row.products || []).map(mapRowToProducto)
   }
 }
 
-// Obtener todas las publicaciones
-export function obtenerPublicaciones(ciudadFiltro?: string): PerfilComercio[] {
-  const usuarios = inicializarDB()
-  const perfiles = usuarios.map(({ password: _password, ...perfil }) => perfil)
+function mapRowToProducto(row: any): Producto {
+  return {
+    id: row.id,
+    titulo: row.titulo,
+    descripcion: row.descripcion || '',
+    precio: row.precio,
+    foto: row.foto || ''
+  }
+}
+
+// ─── Perfiles públicos ──────────────────────────────
+
+export async function obtenerPublicaciones(
+  ciudadFiltro?: string
+): Promise<PerfilComercio[]> {
+  let query = supabase
+    .from('profiles')
+    .select('*, products(*)')
+    .order('created_at', { ascending: false })
 
   if (ciudadFiltro && ciudadFiltro !== 'todas') {
-    return perfiles.filter(
-      (p) => p.ciudad.toLowerCase() === ciudadFiltro.toLowerCase()
-    )
+    query = query.eq('ciudad', ciudadFiltro)
   }
-  return perfiles
+
+  const { data, error } = await query
+  if (error) {
+    console.error('Error obteniendo publicaciones:', error)
+    return []
+  }
+  return (data || []).map(mapRowToPerfil)
 }
 
-// Obtener ciudades dinámicas activas en el sistema para mostrarlas en la cabecera
-export function obtenerCiudadesActivas(): string[] {
-  const publicaciones = obtenerPublicaciones()
-  const ciudadesSemilla = ['Ayacucho', 'Tandil', 'Balcarce', 'Rauch']
+export async function obtenerPerfilPorId(
+  id: string
+): Promise<PerfilComercio | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*, products(*)')
+    .eq('id', id)
+    .maybeSingle()
 
-  // Añadir las ciudades que hayan creado los usuarios en vivo (normalizadas)
-  const ciudadesComercios = publicaciones.map((p) => {
-    // Primera letra en mayúscula para consistencia visual
-    const c = p.ciudad.trim()
-    return c.charAt(0).toUpperCase() + c.slice(1)
-  })
-
-  const todas = [...ciudadesSemilla, ...ciudadesComercios]
-  // Retornar lista de valores únicos ordenados alfabéticamente
-  return Array.from(new Set(todas)).sort()
+  if (error || !data) return null
+  return mapRowToPerfil(data)
 }
 
-// Obtener perfil por ID para la página dedicada /perfil?id=usr_xxx
-export function obtenerPerfilPorId(id: string): PerfilComercio | null {
-  const publicaciones = obtenerPublicaciones()
-  const perfil = publicaciones.find((p) => p.id === id)
-  return perfil || null
+export async function obtenerCiudadesActivas(): Promise<string[]> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('ciudad')
+    .not('ciudad', 'eq', '')
+    .order('ciudad')
+
+  if (!data || data.length === 0) {
+    return ['Ayacucho', 'Tandil', 'Balcarce', 'Rauch']
+  }
+
+  const ciudades = [...new Set(data.map((r) => r.ciudad).filter(Boolean))]
+  return ciudades.length > 0
+    ? ciudades.sort()
+    : ['Ayacucho', 'Tandil', 'Balcarce', 'Rauch']
 }
 
-// Registrar usuario
-export function registrarUsuario(
+// ─── Auth ──────────────────────────────────────────
+
+export async function registrarUsuario(
   email: string,
   password: string,
-  datos: Omit<PerfilComercio, 'id' | 'email' | 'productos'>
-): { success: boolean; message: string } {
-  if (typeof window === 'undefined')
-    return { success: false, message: 'Entorno no soportado' }
-
-  const usuarios = inicializarDB()
+  datos: Omit<PerfilComercio, 'id' | 'email' | 'productos' | 'lat' | 'lng'>
+): Promise<{ success: boolean; message: string }> {
   const emailNorm = email.toLowerCase().trim()
 
-  const existe = usuarios.some((u) => u.email.toLowerCase() === emailNorm)
-  if (existe) {
+  const { data: existente } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('email', emailNorm)
+    .maybeSingle()
+
+  if (existente) {
     return {
       success: false,
       message: 'El correo electrónico ya se encuentra registrado.'
     }
   }
 
-  const nuevoUsuario: UsuarioCuenta = {
-    id: `usr_${Date.now()}`,
+  const { data: authData, error: authError } = await supabase.auth.signUp({
     email: emailNorm,
-    password,
-    nombre_emprendimiento: datos.nombre_emprendimiento,
-    categoria: datos.categoria,
-    descripcion: datos.descripcion,
-    whatsapp: datos.whatsapp,
-    ciudad: datos.ciudad,
-    fotoLogo: datos.fotoLogo || '',
-    fotoPortada: datos.fotoPortada || '',
-    productos: []
+    password
+  })
+
+  if (authError || !authData.user) {
+    return {
+      success: false,
+      message: authError?.message || 'Error al registrar'
+    }
   }
 
-  usuarios.push(nuevoUsuario)
-  localStorage.setItem(STORAGE_KEYS.DB, JSON.stringify(usuarios))
+  const { error: insertError } = await supabase.from('profiles').insert({
+    id: authData.user.id,
+    email: emailNorm,
+    nombre_emprendimiento: datos.nombre_emprendimiento,
+    categoria: datos.categoria,
+    descripcion: datos.descripcion || '',
+    whatsapp: datos.whatsapp || '',
+    ciudad: datos.ciudad || '',
+    direccion: datos.direccion || '',
+    sitio_web: datos.sitio_web || '',
+    historia: datos.historia || '',
+    foto_logo: datos.fotoLogo || '',
+    foto_portada: datos.fotoPortada || ''
+  })
 
-  iniciarSesionSimulada(nuevoUsuario)
+  if (insertError) {
+    return { success: false, message: insertError.message }
+  }
+
   return { success: true, message: 'Registro exitoso' }
 }
 
-// Autenticar credenciales
-export function autenticarUsuario(
+export async function autenticarUsuario(
   email: string,
   password: string
-): { success: boolean; message: string; usuario?: PerfilComercio } {
-  if (typeof window === 'undefined')
-    return { success: false, message: 'Entorno no soportado' }
+): Promise<{ success: boolean; message: string; usuario?: PerfilComercio }> {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.toLowerCase().trim(),
+    password
+  })
 
-  const usuarios = inicializarDB()
-  const emailNorm = email.toLowerCase().trim()
-
-  const usuario = usuarios.find((u) => u.email.toLowerCase() === emailNorm)
-
-  if (!usuario) {
-    return {
-      success: false,
-      message: 'El correo electrónico no está registrado.'
-    }
+  if (error) {
+    const msg =
+      error.message === 'Invalid login credentials'
+        ? 'Correo o contraseña incorrectos.'
+        : error.message
+    return { success: false, message: msg }
   }
 
-  if (usuario.password !== password) {
-    return {
-      success: false,
-      message: 'Contraseña incorrecta. Inténtalo de nuevo.'
-    }
+  const { data: perfil, error: perfilError } = await supabase
+    .from('profiles')
+    .select('*, products(*)')
+    .eq('id', data.user.id)
+    .maybeSingle()
+
+  if (perfilError || !perfil) {
+    return { success: false, message: 'Perfil no encontrado.' }
   }
 
-  iniciarSesionSimulada(usuario)
-
-  const { password: _password, ...perfil } = usuario
-  return { success: true, message: 'Ingreso exitoso', usuario: perfil }
-}
-
-function iniciarSesionSimulada(usuario: UsuarioCuenta) {
-  const { password: _password, ...perfil } = usuario
-  localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(perfil))
-}
-
-// Obtener sesión activa
-export function obtenerSesionActiva(): PerfilComercio | null {
-  if (typeof window === 'undefined') return null
-
-  const sesionRaw = localStorage.getItem(STORAGE_KEYS.SESSION)
-  if (!sesionRaw) return null
-
-  try {
-    const sesion = JSON.parse(sesionRaw) as PerfilComercio
-    const usuarios = inicializarDB()
-    const actualizado = usuarios.find((u) => u.id === sesion.id)
-    if (actualizado) {
-      const { password: _pw, ...perfil } = actualizado
-      return perfil
-    }
-    return sesion
-  } catch {
-    return null
+  return {
+    success: true,
+    message: 'Ingreso exitoso',
+    usuario: mapRowToPerfil(perfil)
   }
 }
 
-// Cerrar sesión
-export function cerrarSesion() {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem(STORAGE_KEYS.SESSION)
-  }
+export async function obtenerSesionActiva(): Promise<PerfilComercio | null> {
+  const {
+    data: { session }
+  } = await supabase.auth.getSession()
+  if (!session?.user) return null
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*, products(*)')
+    .eq('id', session.user.id)
+    .maybeSingle()
+
+  if (error || !data) return null
+  return mapRowToPerfil(data)
 }
 
-// Actualizar perfil
-export function actualizarPerfil(
+export async function cerrarSesion() {
+  await supabase.auth.signOut()
+}
+
+// ─── Perfil propio ─────────────────────────────────
+
+export async function actualizarPerfil(
   id: string,
-  datos: Omit<PerfilComercio, 'id' | 'email' | 'productos'>
-): { success: boolean; message: string } {
-  if (typeof window === 'undefined')
-    return { success: false, message: 'Entorno no soportado' }
+  datos: Omit<PerfilComercio, 'id' | 'email' | 'productos' | 'lat' | 'lng'>
+): Promise<{ success: boolean; message: string }> {
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      nombre_emprendimiento: datos.nombre_emprendimiento,
+      categoria: datos.categoria,
+      descripcion: datos.descripcion || '',
+      whatsapp: datos.whatsapp || '',
+      ciudad: datos.ciudad || '',
+      direccion: datos.direccion || '',
+      sitio_web: datos.sitio_web || '',
+      historia: datos.historia || '',
+      foto_logo: datos.fotoLogo || '',
+      foto_portada: datos.fotoPortada || ''
+    })
+    .eq('id', id)
 
-  const usuarios = inicializarDB()
-  const indice = usuarios.findIndex((u) => u.id === id)
-
-  if (indice === -1) {
-    return { success: false, message: 'Usuario no encontrado.' }
+  if (error) {
+    return { success: false, message: error.message }
   }
-
-  usuarios[indice] = {
-    ...usuarios[indice],
-    nombre_emprendimiento: datos.nombre_emprendimiento,
-    categoria: datos.categoria,
-    descripcion: datos.descripcion,
-    whatsapp: datos.whatsapp,
-    ciudad: datos.ciudad,
-    fotoLogo: datos.fotoLogo || '',
-    fotoPortada: datos.fotoPortada || ''
-  }
-
-  localStorage.setItem(STORAGE_KEYS.DB, JSON.stringify(usuarios))
-
-  const { password: _pw, ...perfil } = usuarios[indice]
-  localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(perfil))
-
   return { success: true, message: 'Perfil actualizado correctamente.' }
 }
 
-// Agregar producto/servicio (Validación condicional por rubro)
-export function agregarProducto(
+// ─── Productos ─────────────────────────────────────
+
+export async function agregarProducto(
   usuarioId: string,
   producto: Omit<Producto, 'id'>
-): { success: boolean; message: string; producto?: Producto } {
-  if (typeof window === 'undefined')
-    return { success: false, message: 'Entorno no soportado' }
+): Promise<{ success: boolean; message: string; producto?: Producto }> {
+  const { data: perfil } = await supabase
+    .from('profiles')
+    .select('categoria')
+    .eq('id', usuarioId)
+    .maybeSingle()
 
-  const usuarios = inicializarDB()
-  const indice = usuarios.findIndex((u) => u.id === usuarioId)
-
-  if (indice === -1) {
+  if (!perfil) {
     return { success: false, message: 'Usuario no encontrado.' }
   }
 
-  const categoria = usuarios[indice].categoria
-  const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria)
+  const categoria = perfil.categoria
+  const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria as any)
   const tieneFoto = !!(producto.foto && producto.foto.trim())
   const tieneDescripcion = !!(
     producto.descripcion && producto.descripcion.trim()
@@ -340,7 +263,6 @@ export function agregarProducto(
   }
 
   if (fotoOpcional) {
-    // Servicios: basta con descripción (foto es opcional)
     if (!tieneDescripcion) {
       return {
         success: false,
@@ -349,7 +271,6 @@ export function agregarProducto(
       }
     }
   } else {
-    // Comidas, artesanías, estética, otros: requieren foto Y descripción
     if (!tieneFoto && !tieneDescripcion) {
       return {
         success: false,
@@ -373,42 +294,50 @@ export function agregarProducto(
     }
   }
 
-  const nuevoProducto: Producto = {
+  const nuevoProducto = {
     id: `prod_${Date.now()}`,
+    profile_id: usuarioId,
     titulo: producto.titulo.trim(),
     descripcion: producto.descripcion.trim(),
-    precio: producto.precio ? Number(producto.precio) : undefined,
+    precio: producto.precio !== undefined ? Number(producto.precio) : null,
     foto: tieneFoto ? producto.foto!.trim() : ''
   }
 
-  usuarios[indice].productos.push(nuevoProducto)
-  localStorage.setItem(STORAGE_KEYS.DB, JSON.stringify(usuarios))
+  const { error } = await supabase.from('products').insert(nuevoProducto)
+  if (error) {
+    return { success: false, message: error.message }
+  }
 
   return {
     success: true,
     message: '¡Publicación agregada con éxito!',
-    producto: nuevoProducto
+    producto: {
+      id: nuevoProducto.id,
+      titulo: nuevoProducto.titulo,
+      descripcion: nuevoProducto.descripcion,
+      precio: nuevoProducto.precio ?? undefined,
+      foto: nuevoProducto.foto
+    }
   }
 }
 
-// Editar producto/servicio (Validación condicional por rubro)
-export function editarProducto(
+export async function editarProducto(
   usuarioId: string,
   productoId: string | number,
   nuevosDatos: Omit<Producto, 'id'>
-): { success: boolean; message: string } {
-  if (typeof window === 'undefined')
-    return { success: false, message: 'Entorno no soportado' }
+): Promise<{ success: boolean; message: string }> {
+  const { data: perfil } = await supabase
+    .from('profiles')
+    .select('categoria')
+    .eq('id', usuarioId)
+    .maybeSingle()
 
-  const usuarios = inicializarDB()
-  const usuarioIndice = usuarios.findIndex((u) => u.id === usuarioId)
-
-  if (usuarioIndice === -1) {
+  if (!perfil) {
     return { success: false, message: 'Usuario no encontrado.' }
   }
 
-  const categoria = usuarios[usuarioIndice].categoria
-  const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria)
+  const categoria = perfil.categoria
+  const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria as any)
   const tieneFoto = !!(nuevosDatos.foto && nuevosDatos.foto.trim())
   const tieneDescripcion = !!(
     nuevosDatos.descripcion && nuevosDatos.descripcion.trim()
@@ -447,60 +376,119 @@ export function editarProducto(
     }
   }
 
-  const productoIndice = usuarios[usuarioIndice].productos.findIndex(
-    (p) => String(p.id) === String(productoId)
-  )
-  if (productoIndice === -1) {
-    return {
-      success: false,
-      message: 'El producto o servicio a editar no existe.'
-    }
-  }
+  const { error } = await supabase
+    .from('products')
+    .update({
+      titulo: nuevosDatos.titulo.trim(),
+      descripcion: nuevosDatos.descripcion.trim(),
+      precio:
+        nuevosDatos.precio !== undefined ? Number(nuevosDatos.precio) : null,
+      foto: tieneFoto ? nuevosDatos.foto!.trim() : ''
+    })
+    .eq('id', String(productoId))
+    .eq('profile_id', usuarioId)
 
-  usuarios[usuarioIndice].productos[productoIndice] = {
-    id: productoId,
-    titulo: nuevosDatos.titulo.trim(),
-    descripcion: nuevosDatos.descripcion.trim(),
-    precio: nuevosDatos.precio ? Number(nuevosDatos.precio) : undefined,
-    foto: tieneFoto ? nuevosDatos.foto!.trim() : ''
+  if (error) {
+    return { success: false, message: error.message }
   }
-
-  localStorage.setItem(STORAGE_KEYS.DB, JSON.stringify(usuarios))
   return { success: true, message: '¡Publicación actualizada con éxito!' }
 }
 
-// Eliminar producto/servicio
-export function eliminarProducto(
+export async function eliminarProducto(
   usuarioId: string,
   productoId: string | number
-): { success: boolean; message: string } {
-  if (typeof window === 'undefined')
-    return { success: false, message: 'Entorno no soportado' }
+): Promise<{ success: boolean; message: string }> {
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq('id', String(productoId))
+    .eq('profile_id', usuarioId)
 
-  const usuarios = inicializarDB()
-  const indice = usuarios.findIndex((u) => u.id === usuarioId)
-
-  if (indice === -1) {
-    return { success: false, message: 'Usuario no encontrado.' }
+  if (error) {
+    return { success: false, message: error.message }
   }
-
-  const productosOriginales = usuarios[indice].productos
-  usuarios[indice].productos = productosOriginales.filter(
-    (p) => String(p.id) !== String(productoId)
-  )
-
-  if (usuarios[indice].productos.length === productosOriginales.length) {
-    return { success: false, message: 'El producto o servicio no existe.' }
-  }
-
-  localStorage.setItem(STORAGE_KEYS.DB, JSON.stringify(usuarios))
   return {
     success: true,
     message: '¡Artículo/Servicio eliminado del catálogo!'
   }
 }
 
-// Obtener o guardar última localidad consultada
+// ─── Calificaciones (ratings) ──────────────────────
+
+export async function agregarRating(
+  profileId: string,
+  rating: number
+): Promise<{ success: boolean; message: string }> {
+  if (rating < 1 || rating > 5) {
+    return { success: false, message: 'La calificación debe ser entre 1 y 5.' }
+  }
+
+  const { error } = await supabase.from('ratings').insert({
+    id: `rat_${Date.now()}`,
+    profile_id: profileId,
+    rating
+  })
+
+  if (error) {
+    return { success: false, message: error.message }
+  }
+  return { success: true, message: 'Calificación guardada.' }
+}
+
+export async function obtenerRating(
+  profileId: string
+): Promise<{ promedio: number; total: number; distribucion: number[] }> {
+  const { data, error } = await supabase
+    .from('ratings')
+    .select('rating')
+    .eq('profile_id', profileId)
+
+  if (error || !data || data.length === 0) {
+    return { promedio: 0, total: 0, distribucion: [0, 0, 0, 0, 0] }
+  }
+
+  const total = data.length
+  const suma = data.reduce((acc, r) => acc + r.rating, 0)
+  const promedio = Math.round((suma / total) * 10) / 10
+
+  const distribucion = [0, 0, 0, 0, 0]
+  data.forEach((r) => {
+    distribucion[r.rating - 1]++
+  })
+
+  return { promedio, total, distribucion }
+}
+
+export async function obtenerRatingsPorIds(
+  ids: string[]
+): Promise<Map<string, { promedio: number; total: number }>> {
+  if (ids.length === 0) return new Map()
+  const { data, error } = await supabase
+    .from('ratings')
+    .select('profile_id, rating')
+    .in('profile_id', ids)
+
+  if (error || !data) return new Map()
+
+  const agrupado = new Map<string, number[]>()
+  data.forEach((r) => {
+    const arr = agrupado.get(r.profile_id) || []
+    arr.push(r.rating)
+    agrupado.set(r.profile_id, arr)
+  })
+
+  const resultado = new Map<string, { promedio: number; total: number }>()
+  agrupado.forEach((ratings, id) => {
+    const total = ratings.length
+    const suma = ratings.reduce((a, b) => a + b, 0)
+    const promedio = Math.round((suma / total) * 10) / 10
+    resultado.set(id, { promedio, total })
+  })
+  return resultado
+}
+
+// ─── Utilidades (localStorage) ─────────────────────
+
 export function obtenerUltimaCiudad(): string {
   if (typeof window === 'undefined') return 'todas'
   return localStorage.getItem(STORAGE_KEYS.LAST_CITY) || 'todas'

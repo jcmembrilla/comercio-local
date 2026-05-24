@@ -11,18 +11,24 @@ import { CATEGORIAS } from '../utils/constants'
   >
     <div>
       <div
-        class="flex items-center justify-between border-b border-[#2A2A2A] pb-4 mb-8"
+        class="flex items-center justify-between pb-4 mb-8"
+        style="border-bottom: 1px solid var(--border-strongest)"
       >
         <div>
           <LogoBrand />
-          <p id="subtitulo-bienvenida" class="text-[10px] text-gray-400 mt-1">
+          <p
+            id="subtitulo-bienvenida"
+            class="text-[10px] mt-1"
+            style="color: var(--tertiary)"
+          >
             ¡Hola! Cargando tus datos...
           </p>
         </div>
         <div class="flex gap-3">
           <a
             href="/"
-            class="text-xs bg-[#1E1E1E] text-gray-300 px-4 py-2.5 rounded-xl border border-[#333] hover:text-white hover:bg-emerald-950/30 hover:border-emerald-800/40 transition-all flex items-center gap-1.5"
+            class="text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5"
+            style="background: var(--button); color: var(--secondary); border: 1px solid var(--border-strong);"
           >
             🔍 Ver Cartelera
           </a>
@@ -37,14 +43,16 @@ import { CATEGORIAS } from '../utils/constants'
 
       <div
         id="alerta-success"
-        class="hidden bg-emerald-950/40 border border-emerald-500/50 text-emerald-300 text-xs p-4 rounded-2xl mb-6 flex items-start gap-2.5"
+        class="hidden text-xs p-4 rounded-2xl mb-6 flex items-start gap-2.5"
+        style="background: var(--alert-success-bg); border: 1px solid var(--alert-success-border); color: var(--alert-success-text)"
       >
         <span class="text-emerald-400 font-bold">✓</span>
         <span id="alerta-success-texto">¡Cambios guardados con éxito!</span>
       </div>
       <div
         id="alerta-error"
-        class="hidden bg-red-950/40 border border-red-500/50 text-red-300 text-xs p-4 rounded-2xl mb-6 flex items-start gap-2.5"
+        class="hidden text-xs p-4 rounded-2xl mb-6 flex items-start gap-2.5"
+        style="background: var(--alert-error-bg); border: 1px solid var(--alert-error-border); color: var(--alert-error-text)"
       >
         <span class="text-red-400 font-bold">⚠️</span>
         <span id="alerta-error-texto">Ocurrió un error.</span>
@@ -54,13 +62,16 @@ import { CATEGORIAS } from '../utils/constants'
         <!-- BLOQUE 1: TARJETA DE PRESENTACIÓN -->
         <div>
           <p
-            class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-1"
+            class="text-xs font-bold uppercase tracking-widest mb-3 px-1"
+            style="color: var(--tertiary)"
           >
             Tu tarjeta de presentación
           </p>
 
           <div
-            class="relative bg-[#1E1E1E]/60 border border-[#2A2A2A] rounded-3xl overflow-hidden backdrop-blur-md"
+            id="dashboard-hero"
+            class="relative rounded-3xl overflow-hidden backdrop-blur-md"
+            style="border: 2px solid var(--border)"
           >
             <div
               id="portada-wrapper"
@@ -73,12 +84,14 @@ import { CATEGORIAS } from '../utils/constants'
                 class="w-full h-full object-cover brightness-75"
               />
               <div
-                class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"
+                class="absolute inset-0"
+                style="background: linear-gradient(to top, var(--overlay), transparent)"
               >
               </div>
               <button
                 id="btn-activar-edicion"
-                class="absolute top-3 right-3 flex items-center gap-1.5 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/20 hover:border-white/40 transition-all cursor-pointer"
+                class="absolute top-3 right-3 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all cursor-pointer"
+                style="background: var(--overlay); color: var(--primary); border: 1px solid var(--border)"
               >
                 <svg
                   class="w-3.5 h-3.5"
@@ -99,7 +112,8 @@ import { CATEGORIAS } from '../utils/constants'
 
             <div id="modo-vista-perfil" class="px-5 pb-5 pt-14 relative">
               <div
-                class="absolute -top-10 left-5 w-20 h-20 rounded-full border-4 border-[#1E1E1E] overflow-hidden bg-black flex items-center justify-center font-bold text-xl text-white shadow-xl"
+                class="absolute -top-10 left-5 w-20 h-20 rounded-full overflow-hidden flex items-center justify-center font-bold text-xl shadow-xl"
+                style="border: 4px solid var(--logo-border); background: var(--surface); color: var(--primary)"
               >
                 <img
                   id="preview-logo-card"
@@ -107,25 +121,34 @@ import { CATEGORIAS } from '../utils/constants'
                   alt="Logo"
                   class="hidden w-full h-full object-cover"
                 />
-                <span id="iniciales-card" class="text-white font-bold text-lg"
-                ></span>
+                <span
+                  id="iniciales-card"
+                  class="font-bold text-lg"
+                  style="color: var(--primary)"></span>
               </div>
               <div class="flex flex-col sm:flex-row justify-between gap-3">
                 <div>
-                  <h2 id="vista-nombre" class="text-lg font-bold text-white">
+                  <h2
+                    id="vista-nombre"
+                    class="text-lg font-bold"
+                    style="color: var(--primary)"
+                  >
                   </h2>
                   <div class="flex items-center gap-2 mt-0.5">
                     <span
                       id="vista-categoria"
                       class="text-xs font-semibold uppercase tracking-wider"
                     ></span>
-                    <span class="text-gray-600 text-xs">•</span>
-                    <span id="vista-ciudad" class="text-xs text-gray-300"
-                    ></span>
+                    <span style="color: var(--quaternary)">•</span>
+                    <span
+                      id="vista-ciudad"
+                      class="text-xs"
+                      style="color: var(--secondary)"></span>
                   </div>
                   <p
                     id="vista-descripcion"
-                    class="text-gray-400 text-xs mt-2 max-w-lg leading-relaxed"
+                    class="text-xs mt-2 max-w-lg leading-relaxed"
+                    style="color: var(--quaternary)"
                   >
                   </p>
                 </div>
@@ -134,10 +157,12 @@ import { CATEGORIAS } from '../utils/constants'
 
             <div
               id="panel-edicion"
-              class="hidden px-5 pb-5 pt-14 border-t border-[#2A2A2A]"
+              class="hidden px-5 pb-5 pt-14 relative"
+              style="border-top: 1px solid var(--border-strongest)"
             >
               <div
-                class="absolute -top-10 left-5 w-20 h-20 rounded-full border-4 border-[#1E1E1E] overflow-hidden bg-black flex items-center justify-center font-bold text-xl text-white shadow-xl pointer-events-none"
+                class="absolute -top-10 left-5 w-20 h-20 rounded-full overflow-hidden flex items-center justify-center font-bold text-xl shadow-xl pointer-events-none"
+                style="border: 4px solid var(--logo-border); background: var(--surface); color: var(--primary)"
               >
                 <img
                   id="preview-logo-edit"
@@ -145,8 +170,10 @@ import { CATEGORIAS } from '../utils/constants'
                   alt="Logo"
                   class="hidden w-full h-full object-cover"
                 />
-                <span id="iniciales-edit" class="text-white font-bold text-lg"
-                ></span>
+                <span
+                  id="iniciales-edit"
+                  class="font-bold text-lg"
+                  style="color: var(--primary)"></span>
               </div>
 
               <p
@@ -160,28 +187,32 @@ import { CATEGORIAS } from '../utils/constants'
                   <div>
                     <label
                       for="nombre_emprendimiento"
-                      class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                      class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                      style="color: var(--quaternary)"
                     >
-                      Nombre Comercial
+                      Nombre del Emprendimiento
                     </label>
                     <input
                       id="nombre_emprendimiento"
                       type="text"
                       required
-                      class="w-full bg-[#121212] text-white px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                      class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                      style="background: var(--surface); color: var(--primary); border: 1px solid var(--border-strong)"
                     />
                   </div>
                   <div>
                     <label
                       for="categoria"
-                      class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                      class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                      style="color: var(--quaternary)"
                     >
                       Rubro / Categoría
                     </label>
                     <select
                       id="categoria"
                       required
-                      class="w-full bg-[#121212] text-white px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                      class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                      style="background: var(--surface); color: var(--primary); border: 1px solid var(--border-strong)"
                     >
                       {
                         CATEGORIAS.map((cat) => (
@@ -196,14 +227,15 @@ import { CATEGORIAS } from '../utils/constants'
                   <div class="flex justify-between items-center mb-2">
                     <label
                       for="descripcion"
-                      class="block text-xs font-semibold text-gray-400 uppercase tracking-wider"
+                      class="block text-xs font-semibold uppercase tracking-wider"
+                      style="color: var(--quaternary)"
                     >
                       Descripción / Biografía
                     </label>
                     <span
                       id="char-counter"
-                      class="text-[10px] text-gray-500 font-medium"
-                      >0 / 150</span
+                      class="text-[10px] font-medium"
+                      style="color: var(--tertiary)">0 / 150</span
                     >
                   </div>
                   <textarea
@@ -211,20 +243,23 @@ import { CATEGORIAS } from '../utils/constants'
                     required
                     maxlength="150"
                     rows="3"
-                    class="w-full bg-[#121212] text-white px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                    class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                    style="background: var(--surface); color: var(--primary); border: 1px solid var(--border-strong)"
                   ></textarea>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
-                      class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                      class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                      style="color: var(--quaternary)"
                     >
                       Logo o Avatar
                     </label>
                     <label
                       for="foto_logo"
-                      class="group flex items-center justify-center gap-2 w-full h-20 rounded-2xl border-2 border-dashed border-[#333] hover:border-emerald-500/50 bg-[#121212] cursor-pointer transition-all relative overflow-hidden"
+                      class="group flex items-center justify-center gap-2 w-full h-20 rounded-2xl border-2 border-dashed cursor-pointer transition-all relative overflow-hidden"
+                      style="border-color: var(--border-strong); background: var(--surface)"
                     >
                       <img
                         id="preview-logo-input"
@@ -237,7 +272,8 @@ import { CATEGORIAS } from '../utils/constants'
                         class="flex items-center gap-2 pointer-events-none"
                       >
                         <svg
-                          class="w-5 h-5 text-gray-500 group-hover:text-emerald-500 transition-colors"
+                          class="w-5 h-5 transition-colors"
+                          style="color: var(--tertiary)"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -250,7 +286,8 @@ import { CATEGORIAS } from '../utils/constants'
                           ></path>
                         </svg>
                         <span
-                          class="text-[10px] text-gray-500 group-hover:text-emerald-400 transition-colors"
+                          class="text-[10px] transition-colors"
+                          style="color: var(--tertiary)"
                           >Cambiar logo · Máx 2MB</span
                         >
                       </div>
@@ -264,13 +301,15 @@ import { CATEGORIAS } from '../utils/constants'
                   </div>
                   <div>
                     <label
-                      class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                      class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                      style="color: var(--quaternary)"
                     >
                       Portada / Banner
                     </label>
                     <label
                       for="foto_portada"
-                      class="group flex items-center justify-center gap-2 w-full h-20 rounded-2xl border-2 border-dashed border-[#333] hover:border-emerald-500/50 bg-[#121212] cursor-pointer transition-all relative overflow-hidden"
+                      class="group flex items-center justify-center gap-2 w-full h-20 rounded-2xl border-2 border-dashed cursor-pointer transition-all relative overflow-hidden"
+                      style="border-color: var(--border-strong); background: var(--surface)"
                     >
                       <img
                         id="preview-portada-input"
@@ -283,7 +322,8 @@ import { CATEGORIAS } from '../utils/constants'
                         class="flex items-center gap-2 pointer-events-none"
                       >
                         <svg
-                          class="w-5 h-5 text-gray-500 group-hover:text-emerald-500 transition-colors"
+                          class="w-5 h-5 transition-colors"
+                          style="color: var(--tertiary)"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -296,7 +336,8 @@ import { CATEGORIAS } from '../utils/constants'
                           ></path>
                         </svg>
                         <span
-                          class="text-[10px] text-gray-500 group-hover:text-emerald-400 transition-colors"
+                          class="text-[10px] transition-colors"
+                          style="color: var(--tertiary)"
                           >Cambiar portada · Máx 2MB</span
                         >
                       </div>
@@ -314,7 +355,8 @@ import { CATEGORIAS } from '../utils/constants'
                   <div>
                     <label
                       for="whatsapp"
-                      class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                      class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                      style="color: var(--quaternary)"
                     >
                       WhatsApp de Contacto
                     </label>
@@ -322,13 +364,15 @@ import { CATEGORIAS } from '../utils/constants'
                       id="whatsapp"
                       type="tel"
                       required
-                      class="w-full bg-[#121212] text-white px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                      class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                      style="background: var(--surface); color: var(--primary); border: 1px solid var(--border-strong)"
                     />
                   </div>
                   <div>
                     <label
                       for="ciudad"
-                      class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                      class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                      style="color: var(--quaternary)"
                     >
                       Localidad / Ciudad
                     </label>
@@ -336,9 +380,75 @@ import { CATEGORIAS } from '../utils/constants'
                       id="ciudad"
                       type="text"
                       required
-                      class="w-full bg-[#121212] text-white px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                      class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                      style="background: var(--surface); color: var(--primary); border: 1px solid var(--border-strong)"
                     />
                   </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      for="direccion"
+                      class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                      style="color: var(--quaternary)"
+                    >
+                      Dirección (Opcional)
+                    </label>
+                    <input
+                      id="direccion"
+                      type="text"
+                      placeholder="Ej: Av. San Martín 123"
+                      class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                      style="background: var(--surface); color: var(--primary); border: 1px solid var(--border-strong)"
+                    />
+                    <span
+                      class="block text-[10px] mt-1 pl-1"
+                      style="color: var(--quaternary)"
+                      >Completá solo si tenés un local comercial.</span
+                    >
+                  </div>
+                  <div>
+                    <label
+                      for="sitio_web"
+                      class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                      style="color: var(--quaternary)"
+                    >
+                      Sitio Web / Red Social
+                    </label>
+                    <input
+                      id="sitio_web"
+                      type="url"
+                      placeholder="Ej: https://instagram.com/tu_cuenta"
+                      class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                      style="background: var(--surface); color: var(--primary); border: 1px solid var(--border-strong)"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between items-center mb-2">
+                    <label
+                      for="historia"
+                      class="block text-xs font-semibold uppercase tracking-wider"
+                      style="color: var(--quaternary)"
+                    >
+                      Historia / Sobre vos (Opcional)
+                    </label>
+                    <span
+                      id="char-counter-historia"
+                      class="text-[10px] font-medium"
+                      style="color: var(--tertiary)">0 / 500</span
+                    >
+                  </div>
+                  <textarea
+                    id="historia"
+                    maxlength="500"
+                    rows="3"
+                    placeholder="Contá cómo trabajás, tu tradición, qué inspiró tu emprendimiento..."
+                    class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                    style="background: var(--surface); color: var(--primary); border: 1px solid var(--border-strong)"
+                  ></textarea>
                 </div>
 
                 <div class="flex gap-3 pt-2">
@@ -351,7 +461,8 @@ import { CATEGORIAS } from '../utils/constants'
                   <button
                     type="button"
                     id="btn-cancelar-edicion-perfil"
-                    class="px-5 bg-[#2A2A2A] hover:bg-[#333] text-gray-300 py-3 rounded-2xl text-sm font-bold transition-all cursor-pointer border border-[#444]"
+                    class="px-5 py-3 rounded-2xl text-sm font-bold transition-all cursor-pointer"
+                    style="background: var(--elevated); color: var(--secondary); border: 1px solid var(--border-strong)"
                   >
                     Cancelar
                   </button>
@@ -363,7 +474,8 @@ import { CATEGORIAS } from '../utils/constants'
 
         <!-- BLOQUE 2: PANEL DE PUBLICACIONES -->
         <div
-          class="bg-[#1E1E1E]/60 p-6 rounded-3xl border border-[#2A2A2A] backdrop-blur-md"
+          class="p-6 rounded-3xl backdrop-blur-md"
+          style="background: var(--elevated-60); border: 1px solid var(--border-strongest)"
         >
           <h2
             class="text-base font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-2.5"
@@ -387,7 +499,7 @@ import { CATEGORIAS } from '../utils/constants'
             </svg>
             Panel de Publicaciones
           </h2>
-          <p class="text-xs text-gray-500 mb-5">
+          <p class="text-xs mb-5" style="color: var(--tertiary)">
             En este panel podés agregar algunos de tus trabajos para que los
             vean tus clientes.
           </p>
@@ -419,19 +531,22 @@ import { CATEGORIAS } from '../utils/constants'
             id="form-producto"
             data-mode="add"
             data-editing-id=""
-            class="space-y-4 bg-black/20 p-4 rounded-2xl border border-white/5 mb-6"
+            class="space-y-4 p-4 rounded-2xl mb-6"
+            style="background: var(--overlay); border: 1px solid var(--border)"
           >
             <div class="flex justify-between items-center">
               <p
                 id="form-producto-titulo"
-                class="text-xs font-bold text-gray-300"
+                class="text-xs font-bold"
+                style="color: var(--secondary)"
               >
                 Nueva publicación:
               </p>
               <button
                 type="button"
                 id="btn-cancelar-edicion"
-                class="hidden text-[10px] bg-zinc-800 text-zinc-400 border border-[#333] px-2 py-1 rounded-lg hover:text-white cursor-pointer"
+                class="hidden text-[10px] px-2 py-1 rounded-lg cursor-pointer"
+                style="background: var(--elevated); color: var(--tertiary); border: 1px solid var(--border-strong)"
               >
                 Cancelar Edición
               </button>
@@ -441,7 +556,8 @@ import { CATEGORIAS } from '../utils/constants'
               <div>
                 <label
                   for="prod-titulo"
-                  class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5"
+                  class="block text-[11px] font-semibold uppercase tracking-wider mb-1.5"
+                  style="color: var(--quaternary)"
                 >
                   Título *
                 </label>
@@ -450,13 +566,15 @@ import { CATEGORIAS } from '../utils/constants'
                   type="text"
                   required
                   placeholder="Ej: Docena de empanadas o Instalación eléctrica"
-                  class="w-full bg-[#1E1E1E] text-white px-3 py-2.5 rounded-xl border border-[#333] text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                  class="w-full px-3 py-2.5 rounded-xl text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                  style="background: var(--button); color: var(--primary); border: 1px solid var(--border-strong)"
                 />
               </div>
               <div>
                 <label
                   for="prod-precio"
-                  class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5"
+                  class="block text-[11px] font-semibold uppercase tracking-wider mb-1.5"
+                  style="color: var(--quaternary)"
                 >
                   Precio ($ARS, Opcional)
                 </label>
@@ -464,7 +582,8 @@ import { CATEGORIAS } from '../utils/constants'
                   id="prod-precio"
                   type="number"
                   placeholder="Ej: 4500 (Dejar vacío para omitir)"
-                  class="w-full bg-[#1E1E1E] text-white px-3 py-2.5 rounded-xl border border-[#333] text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                  class="w-full px-3 py-2.5 rounded-xl text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                  style="background: var(--button); color: var(--primary); border: 1px solid var(--border-strong)"
                 />
               </div>
             </div>
@@ -473,13 +592,15 @@ import { CATEGORIAS } from '../utils/constants'
               <div>
                 <label
                   id="label-prod-foto"
-                  class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5"
+                  class="block text-[11px] font-semibold uppercase tracking-wider mb-1.5"
+                  style="color: var(--quaternary)"
                 >
                   Foto del trabajo
                 </label>
                 <label
                   for="prod-foto-file"
-                  class="group flex items-center justify-center gap-2 w-full h-24 rounded-xl border-2 border-dashed border-[#333] hover:border-emerald-500/50 bg-[#1E1E1E] cursor-pointer transition-all relative overflow-hidden"
+                  class="group flex items-center justify-center gap-2 w-full h-24 rounded-xl border-2 border-dashed cursor-pointer transition-all relative overflow-hidden"
+                  style="border-color: var(--border-strong); background: var(--button)"
                 >
                   <img
                     id="preview-prod-foto"
@@ -492,7 +613,8 @@ import { CATEGORIAS } from '../utils/constants'
                     class="flex flex-col items-center gap-1 pointer-events-none"
                   >
                     <svg
-                      class="w-6 h-6 text-gray-500 group-hover:text-emerald-500 transition-colors"
+                      class="w-6 h-6 transition-colors"
+                      style="color: var(--tertiary)"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -506,8 +628,8 @@ import { CATEGORIAS } from '../utils/constants'
                     </svg>
                     <span
                       id="prod-foto-hint"
-                      class="text-[9px] text-gray-500 group-hover:text-emerald-400 transition-colors"
-                      >Subir foto · Máx 2MB</span
+                      class="text-[9px] transition-colors"
+                      style="color: var(--tertiary)">Subir foto · Máx 2MB</span
                     >
                   </div>
                 </label>
@@ -523,13 +645,15 @@ import { CATEGORIAS } from '../utils/constants'
                 <div class="flex justify-between items-center mb-1.5">
                   <label
                     for="prod-desc"
-                    class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider"
+                    class="block text-[11px] font-semibold uppercase tracking-wider"
+                    style="color: var(--quaternary)"
                   >
                     Descripción *
                   </label>
                   <span
                     id="char-counter-prod"
-                    class="text-[9px] text-gray-500 font-medium">0 / 120</span
+                    class="text-[9px] font-medium"
+                    style="color: var(--tertiary)">0 / 120</span
                   >
                 </div>
                 <textarea
@@ -538,7 +662,8 @@ import { CATEGORIAS } from '../utils/constants'
                   maxlength="120"
                   rows="4"
                   placeholder="Describí qué incluye este trabajo o servicio..."
-                  class="w-full bg-[#1E1E1E] text-white px-3 py-2.5 rounded-xl border border-[#333] text-xs focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                  class="w-full px-3 py-2.5 rounded-xl text-xs focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                  style="background: var(--button); color: var(--primary); border: 1px solid var(--border-strong)"
                 ></textarea>
               </div>
             </div>
@@ -546,7 +671,8 @@ import { CATEGORIAS } from '../utils/constants'
             <button
               type="submit"
               id="btn-submit-producto"
-              class="w-full bg-[#2A2A2A] hover:bg-[#333] text-emerald-400 py-2.5 rounded-xl text-xs font-bold transition-all border border-[#444] active:scale-[0.99] cursor-pointer"
+              class="w-full py-2.5 rounded-xl text-xs font-bold transition-all active:scale-[0.99] cursor-pointer"
+              style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
             >
               + Publicar
             </button>
@@ -554,7 +680,8 @@ import { CATEGORIAS } from '../utils/constants'
 
           <div>
             <p
-              class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"
+              class="text-xs font-bold uppercase tracking-wider mb-3"
+              style="color: var(--quaternary)"
             >
               Tus Publicaciones
             </p>
@@ -569,7 +696,8 @@ import { CATEGORIAS } from '../utils/constants'
         <!-- BLOQUE 3: PREVISUALIZACIÓN CATÁLOGO -->
         <div>
           <p
-            class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-1"
+            class="text-xs font-bold uppercase tracking-widest mb-3 px-1"
+            style="color: var(--tertiary)"
           >
             Previsualización de tu catálogo público
           </p>
@@ -583,7 +711,8 @@ import { CATEGORIAS } from '../utils/constants'
     </div>
 
     <footer
-      class="w-full pt-12 pb-2 text-center text-xs text-gray-600 tracking-wide"
+      class="w-full pt-12 pb-2 text-center text-xs tracking-wide"
+      style="color: var(--quaternary)"
     >
       <p>&copy; 2026 Comercio Local</p>
     </footer>
@@ -608,10 +737,12 @@ import { CATEGORIAS } from '../utils/constants'
   import type { CategoriaRubro } from '../utils/constants'
   import { leerArchivoBase64 } from '../utils/images'
   import { mostrarExito, mostrarError as mostrarErrorUI } from '../utils/ui'
-  import { calcularIniciales } from '../utils/formatters'
+  import { calcularIniciales, escapeHtml } from '../utils/formatters'
 
-  let sesion = obtenerSesionActiva()
+  let sesion = await obtenerSesionActiva()
   if (!sesion) window.location.href = '/login'
+
+  let categoriaColor = '82, 82, 91'
 
   const subBienvenida = document.getElementById(
     'subtitulo-bienvenida'
@@ -666,7 +797,17 @@ import { CATEGORIAS } from '../utils/constants'
   ) as HTMLTextAreaElement
   const inputWhatsapp = document.getElementById('whatsapp') as HTMLInputElement
   const inputCiudad = document.getElementById('ciudad') as HTMLInputElement
+  const inputDireccion = document.getElementById(
+    'direccion'
+  ) as HTMLInputElement
+  const inputSitioWeb = document.getElementById('sitio_web') as HTMLInputElement
+  const textareaHistoria = document.getElementById(
+    'historia'
+  ) as HTMLTextAreaElement
   const charCounter = document.getElementById('char-counter') as HTMLSpanElement
+  const charCounterHistoria = document.getElementById(
+    'char-counter-historia'
+  ) as HTMLSpanElement
   const inputLogo = document.getElementById('foto_logo') as HTMLInputElement
   const inputPortada = document.getElementById(
     'foto_portada'
@@ -747,6 +888,10 @@ import { CATEGORIAS } from '../utils/constants'
     textareaDesc.value = sesion.descripcion
     inputWhatsapp.value = sesion.whatsapp
     inputCiudad.value = sesion.ciudad
+    inputDireccion.value = sesion.direccion || ''
+    inputSitioWeb.value = sesion.sitio_web || ''
+    textareaHistoria.value = sesion.historia || ''
+    charCounterHistoria.textContent = `${(sesion.historia || '').length} / 500`
     charCounter.textContent = `${sesion.descripcion.length} / 150`
     base64Logo = sesion.fotoLogo || ''
     base64Portada = sesion.fotoPortada || ''
@@ -764,6 +909,11 @@ import { CATEGORIAS } from '../utils/constants'
       COLORES_CATEGORIAS[sesion.categoria] || COLORES_CATEGORIAS.otros
     const iniciales = calcularIniciales(sesion.nombre_emprendimiento)
 
+    categoriaColor = colores.rgb
+    const hero = document.getElementById('dashboard-hero') as HTMLDivElement
+    if (hero)
+      hero.style.cssText = `background: rgba(${colores.rgb}, 0.22); border: 2px solid var(--border)`
+
     previewPortadaCard.src = sesion.fotoPortada || respaldos.portada
 
     if (sesion.fotoLogo) {
@@ -778,7 +928,8 @@ import { CATEGORIAS } from '../utils/constants'
     vistaNombre.textContent = sesion.nombre_emprendimiento
     vistaCategoria.textContent = sesion.categoria.toUpperCase()
     vistaCategoria.className = `text-xs font-semibold uppercase tracking-wider ${colores.text}`
-    vistaCiudad.textContent = `📍 ${sesion.ciudad}`
+    const dirText = sesion.direccion ? ` • ${sesion.direccion}` : ''
+    vistaCiudad.textContent = `📍 ${sesion.ciudad}${dirText}`
     vistaDesc.textContent = sesion.descripcion
 
     const logoSrc = base64Logo || sesion.fotoLogo || ''
@@ -849,20 +1000,23 @@ import { CATEGORIAS } from '../utils/constants'
     }
   })
 
-  formPerfil?.addEventListener('submit', (e) => {
+  formPerfil?.addEventListener('submit', async (e) => {
     e.preventDefault()
     if (!sesion) return
-    const res = actualizarPerfil(sesion.id, {
+    const res = await actualizarPerfil(sesion.id, {
       nombre_emprendimiento: inputNombre.value.trim(),
       categoria: selectCategoria.value as CategoriaRubro,
       descripcion: textareaDesc.value.trim(),
       whatsapp: inputWhatsapp.value.trim().replace(/[^\d]/g, ''),
       ciudad: inputCiudad.value.trim(),
+      direccion: inputDireccion.value.trim(),
+      sitio_web: inputSitioWeb.value.trim(),
+      historia: textareaHistoria.value.trim(),
       fotoLogo: base64Logo,
       fotoPortada: base64Portada
     })
     if (res.success) {
-      sesion = obtenerSesionActiva()!
+      sesion = (await obtenerSesionActiva())!
       panelEdicion.classList.add('hidden')
       modoVistaPerfil.classList.remove('hidden')
       actualizarModoVista()
@@ -873,6 +1027,10 @@ import { CATEGORIAS } from '../utils/constants'
 
   textareaDesc?.addEventListener('input', () => {
     charCounter.textContent = `${textareaDesc.value.length} / 150`
+  })
+
+  textareaHistoria?.addEventListener('input', () => {
+    charCounterHistoria.textContent = `${textareaHistoria.value.length} / 500`
   })
 
   function actualizarHintRubro() {
@@ -904,7 +1062,7 @@ import { CATEGORIAS } from '../utils/constants'
     charCounterProd.textContent = `${prodDesc.value.length} / 120`
   })
 
-  formProducto?.addEventListener('submit', (e) => {
+  formProducto?.addEventListener('submit', async (e) => {
     e.preventDefault()
     if (!sesion) return
     const mode = formProducto.getAttribute('data-mode')
@@ -916,18 +1074,18 @@ import { CATEGORIAS } from '../utils/constants'
       descripcion: prodDesc.value.trim()
     }
     if (mode === 'edit' && editingId) {
-      const res = editarProducto(sesion.id, editingId, datos)
+      const res = await editarProducto(sesion.id, editingId, datos)
       if (res.success) {
-        sesion = obtenerSesionActiva()!
+        sesion = (await obtenerSesionActiva())!
         resetFormProducto()
         mostrarExito(alertaSuccess, alertaSuccessT, res.message, alertaError)
         renderizarCatalogo()
         renderizarPreviewCatalogo()
       } else mostrarError(res.message)
     } else {
-      const res = agregarProducto(sesion.id, datos)
+      const res = await agregarProducto(sesion.id, datos)
       if (res.success) {
-        sesion = obtenerSesionActiva()!
+        sesion = (await obtenerSesionActiva())!
         resetFormProducto()
         mostrarExito(alertaSuccess, alertaSuccessT, res.message, alertaError)
         renderizarCatalogo()
@@ -945,7 +1103,9 @@ import { CATEGORIAS } from '../utils/constants'
     formProductoTit.textContent = 'Nueva publicación:'
     btnSubmitProducto.textContent = '+ Publicar'
     btnSubmitProducto.className =
-      'w-full bg-[#2A2A2A] hover:bg-[#333] text-emerald-400 py-2.5 rounded-xl text-xs font-bold transition-all border border-[#444] active:scale-[0.99] cursor-pointer'
+      'w-full py-2.5 rounded-xl text-xs font-bold transition-all active:scale-[0.99] cursor-pointer'
+    btnSubmitProducto.style.cssText =
+      'background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)'
     btnCancelarEdicion.classList.add('hidden')
     charCounterProd.textContent = '0 / 120'
     base64ProdFoto = ''
@@ -957,8 +1117,8 @@ import { CATEGORIAS } from '../utils/constants'
     if (inputProdFotoFile) inputProdFotoFile.value = ''
   }
 
-  btnLogout?.addEventListener('click', () => {
-    cerrarSesion()
+  btnLogout?.addEventListener('click', async () => {
+    await cerrarSesion()
     window.location.href = '/login'
   })
 
@@ -1005,30 +1165,42 @@ import { CATEGORIAS } from '../utils/constants'
     if (!listaProductos || !sesion) return
     listaProductos.innerHTML = ''
     if (sesion.productos.length === 0) {
-      listaProductos.innerHTML = `<div class="text-center py-6 text-gray-500 text-xs italic border border-dashed border-[#333] rounded-2xl">Aún no tenés publicaciones. ¡Agregá la primera arriba!</div>`
+      listaProductos.innerHTML = `<div class="text-center py-6 text-xs italic rounded-2xl" style="color: var(--tertiary); border: 1px dashed var(--border-strong)">Aún no tenés publicaciones. ¡Agregá la primera arriba!</div>`
       return
     }
     sesion.productos.forEach((prod) => {
       const item = document.createElement('div')
       item.className =
-        'flex items-center justify-between gap-4 p-3.5 bg-black/40 border border-[#2A2A2A] rounded-2xl text-xs backdrop-blur-sm hover:border-[#333] transition-all'
-      const priceText = prod.precio
-        ? `<span class="bg-emerald-950/40 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-lg font-bold shrink-0">$${prod.precio}</span>`
-        : ''
-      const imgHtml = prod.foto
-        ? `<img src="${prod.foto}" alt="${prod.titulo}" loading="lazy" class="w-12 h-12 object-cover rounded-xl shrink-0 border border-white/5" />`
-        : `<div class="w-12 h-12 rounded-xl shrink-0 border border-[#333] bg-[#2A2A2A] flex items-center justify-center text-gray-600 text-lg">📄</div>`
+        'flex items-center justify-between gap-4 p-3.5 rounded-2xl text-xs backdrop-blur-sm transition-all'
+      item.style.cssText =
+        'background: var(--overlay); border: 1px solid var(--border-strongest)'
+      const titulo = escapeHtml(prod.titulo)
+      const desc = escapeHtml(prod.descripcion)
+      const precio = prod.precio
+      const fotoValida =
+        prod.foto &&
+        (prod.foto.startsWith('https://') ||
+          prod.foto.startsWith('data:image/'))
+      const fotoUrl = fotoValida ? escapeHtml(prod.foto!) : ''
+      const priceText =
+        precio != null
+          ? `<span class="bg-emerald-950/40 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-lg font-bold shrink-0">$${precio}</span>`
+          : ''
+      const imgHtml = fotoUrl
+        ? `<img src="${fotoUrl}" alt="${titulo}" loading="lazy" class="w-12 h-12 object-cover rounded-xl shrink-0" style="border: 1px solid var(--border)" />`
+        : `<div class="w-12 h-12 rounded-xl shrink-0 flex items-center justify-center text-lg" style="border: 1px solid var(--border-strong); background: var(--elevated); color: var(--quaternary)">📄</div>`
+      const prodId = escapeHtml(String(prod.id))
       item.innerHTML = `
         <div class="flex items-center gap-3 overflow-hidden grow">
           ${imgHtml}
           <div class="overflow-hidden space-y-0.5">
-            <div class="flex items-center gap-2"><p class="font-bold text-white truncate">${prod.titulo}</p>${priceText}</div>
-            <p class="text-[10px] text-gray-400 truncate">${prod.descripcion}</p>
+            <div class="flex items-center gap-2"><p class="font-bold truncate" style="color: var(--primary)">${titulo}</p>${priceText}</div>
+            <p class="text-[10px] truncate" style="color: var(--quaternary)">${desc}</p>
           </div>
         </div>
         <div class="flex gap-2 shrink-0">
-          <button data-prod-id="${prod.id}" class="btn-editar text-[10px] bg-emerald-950/20 text-emerald-400 border border-emerald-900/60 px-2.5 py-1.5 rounded-lg hover:bg-emerald-950/40 transition-colors font-semibold cursor-pointer">Editar</button>
-          <button data-prod-id="${prod.id}" class="btn-eliminar text-[10px] bg-red-950/20 text-red-400 border border-red-950/80 px-2.5 py-1.5 rounded-lg hover:bg-red-950/40 transition-colors font-semibold cursor-pointer">Borrar</button>
+          <button data-prod-id="${prodId}" class="btn-editar text-[10px] bg-emerald-950/20 text-emerald-400 border border-emerald-900/60 px-2.5 py-1.5 rounded-lg hover:bg-emerald-950/40 transition-colors font-semibold cursor-pointer">Editar</button>
+          <button data-prod-id="${prodId}" class="btn-eliminar text-[10px] bg-red-950/20 text-red-400 border border-red-950/80 px-2.5 py-1.5 rounded-lg hover:bg-red-950/40 transition-colors font-semibold cursor-pointer">Borrar</button>
         </div>`
       listaProductos.appendChild(item)
     })
@@ -1041,7 +1213,7 @@ import { CATEGORIAS } from '../utils/constants'
           const prod = sesion.productos.find((p) => String(p.id) === String(id))
           if (prod) {
             prodTitulo.value = prod.titulo
-            prodPrecio.value = prod.precio ? String(prod.precio) : ''
+            prodPrecio.value = prod.precio != null ? String(prod.precio) : ''
             prodDesc.value = prod.descripcion
             charCounterProd.textContent = `${prod.descripcion.length} / 120`
             base64ProdFoto = prod.foto || ''
@@ -1056,6 +1228,7 @@ import { CATEGORIAS } from '../utils/constants'
             btnSubmitProducto.textContent = '✏️ Guardar Cambios'
             btnSubmitProducto.className =
               'w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl text-xs font-bold transition-all active:scale-[0.99] cursor-pointer'
+            btnSubmitProducto.style.cssText = ''
             btnCancelarEdicion.classList.remove('hidden')
             formProducto.scrollIntoView({ behavior: 'smooth', block: 'center' })
           }
@@ -1074,9 +1247,9 @@ import { CATEGORIAS } from '../utils/constants'
         )
         if (!confirmado) return
 
-        const res = eliminarProducto(sesion.id, id)
+        const res = await eliminarProducto(sesion.id, id)
         if (res.success) {
-          sesion = obtenerSesionActiva()!
+          sesion = (await obtenerSesionActiva())!
           renderizarCatalogo()
           renderizarPreviewCatalogo()
           mostrarExito(alertaSuccess, alertaSuccessT, res.message, alertaError)
@@ -1093,20 +1266,29 @@ import { CATEGORIAS } from '../utils/constants'
     if (!contenedorCatalogo || !sesion) return
     contenedorCatalogo.innerHTML = ''
     if (sesion.productos.length === 0) {
-      contenedorCatalogo.innerHTML = `<div class="col-span-2 text-center py-6 text-gray-500 text-xs italic bg-[#1E1E1E]/20 border border-[#2A2A2A] rounded-2xl p-4">Cargá publicaciones arriba para ver la previsualización de tu perfil público.</div>`
+      contenedorCatalogo.innerHTML = `<div class="col-span-2 text-center py-6 text-xs italic rounded-2xl p-4" style="color: var(--tertiary); border: 2px solid var(--border); background: rgba(${categoriaColor}, 0.18)">Cargá publicaciones arriba para ver la previsualización de tu perfil público.</div>`
       return
     }
     sesion.productos.forEach((prod) => {
       const card = document.createElement('div')
-      card.className =
-        'bg-[#1E1E1E]/60 border border-[#2A2A2A] rounded-2xl overflow-hidden flex flex-col backdrop-blur-md shadow-md'
-      const priceTag = prod.precio
-        ? `<span class="text-emerald-400 font-bold text-xs bg-emerald-950/40 px-2 py-0.5 rounded-lg border border-emerald-500/20 shrink-0">$${prod.precio}</span>`
-        : ''
-      const imgHtml = prod.foto
-        ? `<div class="w-full h-32 overflow-hidden"><img src="${prod.foto}" alt="${prod.titulo}" loading="lazy" class="w-full h-full object-cover" /></div>`
-        : `<div class="w-full h-16 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#111] border-b border-[#2A2A2A] text-gray-600 text-2xl">📋</div>`
-      card.innerHTML = `${imgHtml}<div class="p-3 space-y-1"><div class="flex items-center gap-2"><h4 class="text-white font-bold text-xs truncate grow">${prod.titulo}</h4>${priceTag}</div><p class="text-gray-400 text-[10px] line-clamp-2 leading-relaxed">${prod.descripcion}</p></div>`
+      card.className = 'rounded-2xl overflow-hidden flex flex-col'
+      card.style.cssText = `border: 2px solid var(--border); background: rgba(${categoriaColor}, 0.18)`
+      const titulo = escapeHtml(prod.titulo)
+      const desc = escapeHtml(prod.descripcion)
+      const precio = prod.precio
+      const fotoValida =
+        prod.foto &&
+        (prod.foto.startsWith('https://') ||
+          prod.foto.startsWith('data:image/'))
+      const fotoUrl = fotoValida ? escapeHtml(prod.foto!) : ''
+      const priceTag =
+        precio != null
+          ? `<span class="text-emerald-400 font-bold text-xs bg-emerald-950/40 px-2 py-0.5 rounded-lg border border-emerald-500/20 shrink-0">$${precio}</span>`
+          : ''
+      const imgHtml = fotoUrl
+        ? `<div class="w-full h-32 overflow-hidden"><img src="${fotoUrl}" alt="${titulo}" loading="lazy" class="w-full h-full object-cover" /></div>`
+        : `<div class="w-full h-16 flex items-center justify-center text-2xl" style="background: var(--button); color: var(--quaternary)">📋</div>`
+      card.innerHTML = `${imgHtml}<div class="p-3 space-y-1"><div class="flex items-center gap-2"><h4 class="font-bold text-xs truncate grow" style="color: var(--primary)">${titulo}</h4>${priceTag}</div><p class="text-[10px] line-clamp-2 leading-relaxed" style="color: var(--quaternary)">${desc}</p></div>`
       contenedorCatalogo.appendChild(card)
     })
   }

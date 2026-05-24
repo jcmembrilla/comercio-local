@@ -21,7 +21,8 @@ const {
 <div>
   <label
     for={id}
-    class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+    class="block text-xs font-semibold uppercase tracking-wider mb-2"
+    style="color: var(--tertiary)"
   >
     {label}
   </label>
@@ -32,7 +33,8 @@ const {
         rows={3}
         placeholder={placeholder}
         {required}
-        class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+        class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+        style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
       />
     ) : (
       <input
@@ -40,13 +42,19 @@ const {
         type={type}
         placeholder={placeholder}
         {required}
-        class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+        class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+        style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
       />
     )
   }
   {
     hint && (
-      <span class="block text-[10px] text-gray-500 mt-1 pl-1">{hint}</span>
+      <span
+        class="block text-[10px] mt-1 pl-1"
+        style="color: var(--quaternary)"
+      >
+        {hint}
+      </span>
     )
   }
 </div>

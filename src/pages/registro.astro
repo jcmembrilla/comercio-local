@@ -14,13 +14,17 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
   >
     <div class="w-full">
       <div
-        class="flex items-center justify-between border-b border-[#2A2A2A] pb-4 mb-6"
+        class="flex items-center justify-between pb-4 mb-6"
+        style="border-bottom: 1px solid var(--border-strongest)"
       >
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-wide">
+          <h1
+            class="text-2xl font-bold tracking-wide"
+            style="color: var(--primary)"
+          >
             Comercio Local
           </h1>
-          <p class="text-xs text-gray-500 mt-1">
+          <p class="text-xs mt-1" style="color: var(--tertiary)">
             Sumate a la cartelera independiente de tu localidad
           </p>
         </div>
@@ -28,7 +32,8 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
       </div>
 
       <div
-        class="bg-[#1E1E1E]/60 p-6 rounded-3xl border border-[#2A2A2A] backdrop-blur-md"
+        class="p-6 rounded-3xl border backdrop-blur-md"
+        style="background: var(--elevated-60); border-color: var(--border-strongest)"
       >
         <SocialButtons mode="register" />
 
@@ -37,7 +42,8 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
         <form id="form-registro" class="space-y-6">
           <div class="space-y-4">
             <h2
-              class="text-sm font-bold text-emerald-400 uppercase tracking-wider border-b border-[#2A2A2A] pb-1.5"
+              class="text-sm font-bold text-emerald-400 uppercase tracking-wider pb-1.5"
+              style="border-bottom: 1px solid var(--border-strongest)"
             >
               Datos Comerciales o Profesional
             </h2>
@@ -46,30 +52,34 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
               <div>
                 <label
                   for="nombre_emprendimiento"
-                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                  style="color: var(--tertiary)"
                 >
-                  Nombre Comercial o Profesional
+                  Nombre del Emprendimiento
                 </label>
                 <input
                   id="nombre_emprendimiento"
                   type="text"
                   required
                   placeholder="Ej: Carlos Albornoz o La Cocina de Mabel"
-                  class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                  class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                  style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
                 />
               </div>
 
               <div>
                 <label
                   for="categoria"
-                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                  style="color: var(--tertiary)"
                 >
                   Rubro / Categoría
                 </label>
                 <select
                   id="categoria"
                   required
-                  class="w-full bg-[#1E1E1E] text-white px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                  class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                  style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
                 >
                   <option value="" disabled selected>
                     Selecciona un rubro
@@ -87,13 +97,15 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
               <div class="flex justify-between items-center mb-2">
                 <label
                   for="descripcion"
-                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider"
+                  class="block text-xs font-semibold uppercase tracking-wider"
+                  style="color: var(--tertiary)"
                 >
                   Descripción Breve o Biografía
                 </label>
                 <span
                   id="char-counter"
-                  class="text-[10px] text-gray-500 font-medium">0 / 150</span
+                  class="text-[10px] font-medium"
+                  style="color: var(--tertiary)">0 / 150</span
                 >
               </div>
               <textarea
@@ -102,7 +114,8 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
                 maxlength="150"
                 rows="3"
                 placeholder="Describe qué ofreces o cuál es tu especialidad. Máximo 150 caracteres."
-                class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
               ></textarea>
             </div>
 
@@ -115,7 +128,8 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
               <div>
                 <label
                   for="whatsapp"
-                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                  style="color: var(--tertiary)"
                 >
                   WhatsApp de Contacto
                 </label>
@@ -124,9 +138,12 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
                   type="tel"
                   required
                   placeholder="Ej: 5491123456789"
-                  class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                  class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                  style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
                 />
-                <span class="block text-[10px] text-gray-500 mt-1 pl-1"
+                <span
+                  class="block text-[10px] mt-1 pl-1"
+                  style="color: var(--quaternary)"
                   >Código de país + número, sin signos + ni guiones.</span
                 >
               </div>
@@ -134,14 +151,16 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
               <div>
                 <label
                   for="ciudad"
-                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                  style="color: var(--tertiary)"
                 >
                   Localidad / Ciudad
                 </label>
                 <select
                   id="ciudad"
                   required
-                  class="w-full bg-[#1E1E1E] text-white px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                  class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                  style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
                 >
                   <option value="" disabled selected>
                     Selecciona tu localidad
@@ -159,7 +178,8 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
             <div id="otra-ciudad-container" class="hidden">
               <label
                 for="otra_ciudad"
-                class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                style="color: var(--tertiary)"
               >
                 Nombre de tu Localidad
               </label>
@@ -167,14 +187,38 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
                 id="otra_ciudad"
                 type="text"
                 placeholder="Ingresa tu ciudad o localidad"
-                class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
               />
+            </div>
+
+            <div>
+              <label
+                for="direccion"
+                class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                style="color: var(--tertiary)"
+              >
+                Dirección (Opcional)
+              </label>
+              <input
+                id="direccion"
+                type="text"
+                placeholder="Ej: Av. San Martín 123"
+                class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
+              />
+              <span
+                class="block text-[10px] mt-1 pl-1"
+                style="color: var(--quaternary)"
+                >Completá solo si tenés un local o domicilio comercial.</span
+              >
             </div>
           </div>
 
           <div class="space-y-4 pt-2">
             <h2
-              class="text-sm font-bold text-emerald-400 uppercase tracking-wider border-b border-[#2A2A2A] pb-1.5"
+              class="text-sm font-bold text-emerald-400 uppercase tracking-wider pb-1.5"
+              style="border-bottom: 1px solid var(--border-strongest)"
             >
               Credenciales de Acceso
             </h2>
@@ -183,7 +227,8 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
               <div>
                 <label
                   for="email"
-                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                  style="color: var(--tertiary)"
                 >
                   Correo Electrónico
                 </label>
@@ -192,14 +237,16 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
                   type="email"
                   required
                   placeholder="tu@correo.com"
-                  class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                  class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                  style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
                 />
               </div>
 
               <div>
                 <label
                   for="password"
-                  class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+                  class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                  style="color: var(--tertiary)"
                 >
                   Contraseña
                 </label>
@@ -208,9 +255,12 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
                   type="password"
                   required
                   placeholder="Mín. 6 caracteres (letras y números)"
-                  class="w-full bg-[#1E1E1E] text-white placeholder-gray-600 px-4 py-3 rounded-2xl border border-[#333] text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                  class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                  style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
                 />
-                <span class="block text-[10px] text-gray-500 mt-1 pl-1"
+                <span
+                  class="block text-[10px] mt-1 pl-1"
+                  style="color: var(--quaternary)"
                   >Debe incluir al menos una letra y un número.</span
                 >
               </div>
@@ -226,7 +276,7 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
         </form>
       </div>
 
-      <div class="mt-6 text-center text-sm text-gray-400">
+      <div class="mt-6 text-center text-sm" style="color: var(--tertiary)">
         ¿Ya tenés una cuenta registrada?
         <a
           href="/login"
@@ -247,7 +297,7 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
   import { leerArchivoBase64 } from '../utils/images'
   import { mostrarError as mostrarErrorUI } from '../utils/ui'
 
-  const sesion = obtenerSesionActiva()
+  const sesion = await obtenerSesionActiva()
   if (sesion) window.location.href = '/dashboard'
 
   const form = document.getElementById('form-registro') as HTMLFormElement
@@ -351,7 +401,10 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
     charCounter.className =
       len >= 140
         ? 'text-[10px] text-amber-500 font-bold'
-        : 'text-[10px] text-gray-500 font-medium'
+        : 'text-[10px] font-medium'
+    if (len < 140) {
+      charCounter.style.color = 'var(--tertiary)'
+    }
   })
 
   form?.addEventListener('submit', async (e) => {
@@ -392,12 +445,17 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
       return
     }
 
-    const res = registrarUsuario(email, password, {
+    const direccionInput = document.getElementById(
+      'direccion'
+    ) as HTMLInputElement
+
+    const res = await registrarUsuario(email, password, {
       nombre_emprendimiento: nombre,
       categoria,
       descripcion,
       whatsapp,
       ciudad,
+      direccion: direccionInput.value.trim(),
       fotoLogo: base64Logo,
       fotoPortada: base64Portada
     })

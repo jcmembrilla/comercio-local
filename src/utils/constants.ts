@@ -22,9 +22,14 @@ export interface PerfilComercio {
   descripcion: string
   whatsapp: string
   ciudad: string
+  direccion?: string
+  lat?: number
+  lng?: number
+  sitio_web?: string
+  historia?: string
   productos: Producto[]
-  fotoLogo?: string // Nuevo campo opcional para foto/logo de perfil
-  fotoPortada?: string // Nuevo campo opcional para banner de portada
+  fotoLogo?: string
+  fotoPortada?: string
 }
 
 export type CategoriaRubro = PerfilComercio['categoria']
@@ -62,55 +67,63 @@ export type CiudadPredefinida = (typeof CIUDADES_PREDEFINIDAS)[number]
 
 export const COLORES_CATEGORIAS: Record<
   CategoriaRubro,
-  { bg: string; border: string; text: string; fullClass: string }
+  { bg: string; border: string; text: string; fullClass: string; rgb: string }
 > = {
   comidas: {
     bg: 'bg-emerald-950/40',
     border: 'border-emerald-500',
     text: 'text-emerald-400',
-    fullClass: 'bg-emerald-950/40 border-emerald-500/50 text-emerald-400'
+    fullClass: 'bg-emerald-950/40 border-emerald-500/50 text-emerald-400',
+    rgb: '5, 150, 105'
   },
   oficios: {
     bg: 'bg-slate-900/60',
     border: 'border-slate-500',
     text: 'text-slate-300',
-    fullClass: 'bg-slate-900/60 border-slate-500/50 text-slate-300'
+    fullClass: 'bg-slate-900/60 border-slate-500/50 text-slate-300',
+    rgb: '100, 116, 139'
   },
   artesanias: {
     bg: 'bg-amber-950/30',
     border: 'border-amber-600',
     text: 'text-amber-400',
-    fullClass: 'bg-amber-950/30 border-amber-600/50 text-amber-400'
+    fullClass: 'bg-amber-950/30 border-amber-600/50 text-amber-400',
+    rgb: '217, 119, 6'
   },
   jardineria: {
     bg: 'bg-teal-950/40',
     border: 'border-teal-500',
     text: 'text-teal-400',
-    fullClass: 'bg-teal-950/40 border-teal-500/50 text-teal-400'
+    fullClass: 'bg-teal-950/40 border-teal-500/50 text-teal-400',
+    rgb: '20, 184, 166'
   },
   estetica: {
     bg: 'bg-rose-950/30',
     border: 'border-rose-500',
     text: 'text-rose-400',
-    fullClass: 'bg-rose-950/30 border-rose-500/50 text-rose-400'
+    fullClass: 'bg-rose-950/30 border-rose-500/50 text-rose-400',
+    rgb: '244, 63, 94'
   },
   educacion: {
     bg: 'bg-indigo-950/30',
     border: 'border-indigo-500',
     text: 'text-indigo-400',
-    fullClass: 'bg-indigo-950/30 border-indigo-500/50 text-indigo-400'
+    fullClass: 'bg-indigo-950/30 border-indigo-500/50 text-indigo-400',
+    rgb: '99, 102, 241'
   },
   tecnologia: {
     bg: 'bg-cyan-950/30',
     border: 'border-cyan-500',
     text: 'text-cyan-400',
-    fullClass: 'bg-cyan-950/30 border-cyan-500/50 text-cyan-400'
+    fullClass: 'bg-cyan-950/30 border-cyan-500/50 text-cyan-400',
+    rgb: '6, 182, 212'
   },
   otros: {
     bg: 'bg-zinc-900',
     border: 'border-zinc-600',
     text: 'text-zinc-400',
-    fullClass: 'bg-zinc-900 border-zinc-600 text-zinc-400'
+    fullClass: 'bg-zinc-900 border-zinc-600 text-zinc-400',
+    rgb: '82, 82, 91'
   }
 }
 

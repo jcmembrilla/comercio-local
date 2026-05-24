@@ -82,13 +82,15 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
           id="buscador"
           type="text"
           placeholder="Busca un servicio o producto..."
-          class="w-[75%] bg-[#1E1E1E] text-white placeholder-gray-500 px-4 py-3.5 rounded-2xl border border-[#333] text-base focus:outline-none focus:border-emerald-500 transition-colors"
+          class="w-[75%] px-4 py-3.5 rounded-2xl text-base focus:outline-none focus:border-emerald-500 transition-colors placeholder-gray-500"
+          style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
         />
 
         <div class="relative w-[25%]">
           <select
             id="filtro-rubro"
-            class="w-full h-full bg-[#1E1E1E] text-gray-300 pl-3 pr-6 py-3.5 rounded-2xl border border-[#333] text-xs font-medium appearance-none focus:outline-none transition-all cursor-pointer text-ellipsis overflow-hidden whitespace-nowrap"
+            class="w-full h-full pl-3 pr-6 py-3.5 rounded-2xl text-xs font-medium appearance-none focus:outline-none transition-all cursor-pointer text-ellipsis overflow-hidden whitespace-nowrap"
+            style="background: var(--elevated); color: var(--secondary); border: 1px solid var(--border-strong)"
           >
             <option value="" disabled selected>Rubro</option>
             <option value="todas">Todos</option>
@@ -98,7 +100,8 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
           </select>
           <div
             id="icono-select"
-            class="absolute inset-y-0 right-2 flex items-center pointer-events-none text-gray-500 transition-colors"
+            class="absolute inset-y-0 right-2 flex items-center pointer-events-none transition-colors"
+            style="color: var(--tertiary)"
           >
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -110,20 +113,25 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
       <div class="flex gap-4 mb-8 max-w-lg mx-auto">
         <button
           id="btn-servicios"
-          class="flex-1 bg-[#1E1E1E] text-white py-3.5 rounded-2xl border border-[#333] text-base font-semibold hover:bg-[#252525] active:scale-[0.98] transition-all cursor-pointer"
+          class="flex-1 py-3.5 rounded-2xl border text-base font-semibold active:scale-[0.98] transition-all cursor-pointer"
+          style="background: var(--elevated); color: var(--primary); border-color: var(--border-strong)"
         >
           Servicios y Oficios
         </button>
         <button
           id="btn-ventas"
-          class="flex-1 bg-[#1E1E1E] text-white py-3.5 rounded-2xl border border-[#333] text-base font-semibold hover:bg-[#252525] active:scale-[0.98] transition-all cursor-pointer"
+          class="flex-1 py-3.5 rounded-2xl border text-base font-semibold active:scale-[0.98] transition-all cursor-pointer"
+          style="background: var(--elevated); color: var(--primary); border-color: var(--border-strong)"
         >
           Ventas y Producción
         </button>
       </div>
 
-      <div class="bg-[#1E1E1E]/60 p-5 rounded-3xl border border-[#2A2A2A] mb-3 text-center max-w-lg mx-auto backdrop-blur-md">
-        <p class="text-gray-300 text-sm leading-relaxed">
+      <div
+        class="p-5 rounded-3xl border mb-3 text-center max-w-lg mx-auto backdrop-blur-md"
+        style="background: var(--elevated-60); border-color: var(--border-strongest)"
+      >
+        <p class="text-sm leading-relaxed" style="color: var(--secondary)">
           Una cartelera digital para fomentar y facilitar el comercio local,
           de profesionales y emprendedores independientes de tu localidad.
           <a
@@ -147,7 +155,8 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
       <div class="mb-4">
         <h2
           id="titulo-feed"
-          class="text-sm font-semibold tracking-wider text-gray-500 uppercase px-1 pointer-events-none mb-4"
+          class="text-sm font-semibold tracking-wider uppercase px-1 pointer-events-none mb-4"
+          style="color: var(--tertiary)"
         >
           Descubrí en tu localidad
         </h2>
@@ -170,10 +179,12 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     obtenerSesionActiva,
     obtenerUltimaCiudad,
     guardarUltimaCiudad,
-    obtenerCiudadesActivas
+    obtenerCiudadesActivas,
+    obtenerRatingsPorIds
   } from '../utils/storage'
   import { COLORES_CATEGORIAS, RESPALDOS_POR_RUBRO } from '../utils/constants'
   import type { CategoriaRubro } from '../utils/constants'
+  import { renderizarEstrellas, escapeHtml, mezclarArray } from '../utils/formatters'
 
   const selectorCiudad = document.getElementById(
     'selector-ciudad-cabecera'
@@ -203,18 +214,23 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     ventas: ['comidas', 'artesanias', 'estetica', 'otros']
   }
 
-  const sesion = obtenerSesionActiva()
+  const [publicaciones, ciudadesActivas, sesion] = await Promise.all([
+    obtenerPublicaciones(),
+    obtenerCiudadesActivas(),
+    obtenerSesionActiva()
+  ])
+
   if (sesion && btnAuth) {
     btnAuth.href = '/dashboard'
-    btnAuth.className =
-      'text-xs bg-emerald-950/40 border border-emerald-500/50 hover:bg-emerald-900/60 text-emerald-400 font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shrink-0'
+    btnAuth.style.background = 'var(--elevated)'
+    btnAuth.style.borderColor = 'var(--border-strong)'
+    btnAuth.style.color = 'var(--primary)'
     btnAuth.innerHTML = '👤 Mi Perfil'
   }
 
   function poblarSelectorLocalidades() {
     if (!selectorCiudad) return
 
-    const ciudadesActivas = obtenerCiudadesActivas()
     const ciudadSeleccionada = obtenerUltimaCiudad()
 
     selectorCiudad.innerHTML = ''
@@ -247,8 +263,6 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     }
   }
 
-  const publicaciones = obtenerPublicaciones()
-
   function renderizarFeedCliente() {
     if (!contenedorFeed) return
     contenedorFeed.innerHTML = ''
@@ -261,10 +275,12 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
 
     if (publicacionesFiltradas.length === 0) {
       contenedorFeed.innerHTML = `
-        <div class="col-span-1 md:col-span-2 text-center py-12 text-gray-400 bg-[#1E1E1E]/40 border border-[#2A2A2A] rounded-3xl p-6">
+        <div class="col-span-1 md:col-span-2 text-center py-12 p-6 rounded-3xl border"
+          style="color: var(--quaternary); background: var(--elevated-40); border-color: var(--border-strongest)"
+        >
           <span class="text-3xl block mb-2">📍</span>
-          <p class="font-bold text-white mb-1">No hay comercios cargados en esta localidad.</p>
-          <p class="text-xs text-gray-500">Sé el primero de tu rubro en registrarse y aparecer acá.</p>
+          <p class="font-bold mb-1" style="color: var(--primary)">No hay comercios cargados en esta localidad.</p>
+          <p class="text-xs" style="color: var(--tertiary)">Sé el primero de tu rubro en registrarse y aparecer acá.</p>
         </div>
       `
       return
@@ -273,7 +289,11 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     publicacionesFiltradas.forEach((pub) => {
       const configColor =
         COLORES_CATEGORIAS[pub.categoria] || COLORES_CATEGORIAS.otros
-      const iniciales = pub.nombre_emprendimiento
+      const nombre = escapeHtml(pub.nombre_emprendimiento)
+      const descripcion = escapeHtml(pub.descripcion)
+      const ciudad = escapeHtml(pub.ciudad)
+      const categoria = pub.categoria
+      const iniciales = nombre
         .split(' ')
         .map((n) => n[0])
         .join('')
@@ -282,51 +302,52 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
       const respaldos =
         RESPALDOS_POR_RUBRO[pub.categoria] || RESPALDOS_POR_RUBRO.otros
 
-      const urlPortada = pub.fotoPortada || respaldos.portada
-      const urlLogo = pub.fotoLogo
+      const portadaValida = pub.fotoPortada && (pub.fotoPortada.startsWith('https://') || pub.fotoPortada.startsWith('data:image/'))
+      const urlPortada = portadaValida ? escapeHtml(pub.fotoPortada!) : respaldos.portada
+      const logoValido = pub.fotoLogo && (pub.fotoLogo.startsWith('https://') || pub.fotoLogo.startsWith('data:image/'))
+      const urlLogo = logoValido ? escapeHtml(pub.fotoLogo!) : ''
 
       const htmlAvatar = urlLogo
-        ? `<img src="${urlLogo}" alt="Logo" loading="lazy" class="w-full h-full object-cover shrink-0" />`
-        : `<span class="text-white font-bold text-base">${iniciales}</span>`
+        ? `<img src="${urlLogo}" alt="${nombre}" loading="lazy" class="w-full h-full object-cover shrink-0" />`
+        : `<span class="font-bold text-base" style="color: var(--primary)">${iniciales}</span>`
 
       const card = document.createElement('div')
-      card.className = `tarjeta-comercio p-5 rounded-3xl border transition-all flex flex-col justify-between h-full bg-[#1E1E1E]/40 border-[#2A2A2A] text-gray-200 hover:border-[#3a3a3a]`
-      card.setAttribute(
-        'data-nombre',
-        pub.nombre_emprendimiento.toLowerCase()
-      )
-      card.setAttribute('data-categoria', pub.categoria)
-      card.setAttribute(
-        'data-descripcion',
-        pub.descripcion.toLowerCase()
-      )
+      card.className = `tarjeta-comercio p-5 rounded-3xl border-2 flex flex-col justify-between h-full`
+      card.style.cssText = `background: rgba(${configColor.rgb}, 0.22); border-color: var(--border); color: var(--secondary)`
+      card.setAttribute('data-nombre', pub.nombre_emprendimiento.toLowerCase())
+      card.setAttribute('data-categoria', categoria)
+      card.setAttribute('data-descripcion', pub.descripcion.toLowerCase())
 
       card.innerHTML = `
         <div class="flex flex-col grow">
-          <div class="h-28 -mx-5 -mt-5 rounded-t-3xl overflow-hidden relative mb-12">
-            <img src="${urlPortada}" alt="Portada" loading="lazy" class="w-full h-full object-cover filter brightness-[0.75]" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <div class="absolute -bottom-10 left-4 w-18 h-18 rounded-full border-4 border-[#121212] overflow-hidden bg-black flex items-center justify-center shrink-0 shadow-lg">
+          <div class="h-32 -mx-5 -mt-5 relative mb-6">
+            <div class="rounded-t-3xl overflow-hidden h-full">
+              <img src="${urlPortada}" alt="Portada" loading="lazy" class="w-full h-full object-cover filter brightness-[0.75]" />
+              <div class="absolute inset-0 rounded-t-3xl" style="background: linear-gradient(to top, var(--overlay), transparent)"></div>
+            </div>
+            <div class="absolute -bottom-10 right-4 w-18 h-18 rounded-full overflow-hidden flex items-center justify-center shrink-0 shadow-lg" style="background: var(--surface); border: 4px solid var(--logo-border)">
               ${htmlAvatar}
             </div>
           </div>
           <div class="flex items-center justify-between gap-4 mb-2">
             <div class="overflow-hidden">
-              <h3 class="text-white font-bold text-base leading-tight truncate">${pub.nombre_emprendimiento}</h3>
+              <h3 class="font-bold text-base leading-tight truncate" style="color: var(--primary)">${nombre}</h3>
               <div class="flex items-center gap-1.5 mt-0.5">
-                <span class="text-[10px] uppercase font-bold tracking-wider ${configColor.text}">${pub.categoria}</span>
-                <span class="text-gray-500 text-[10px]">•</span>
-                <span class="text-[10px] text-gray-300 font-medium">📍 ${pub.ciudad}</span>
+                <span class="text-[10px] uppercase font-bold tracking-wider" style="color: var(--primary); opacity: 0.7">${categoria}</span>
+                <span class="text-[10px]" style="color: var(--tertiary)">•</span>
+                <span class="text-[10px] font-medium" style="color: var(--secondary)">📍 ${ciudad}</span>
               </div>
             </div>
           </div>
-          <p class="text-gray-300 text-xs leading-relaxed mb-5 line-clamp-3 h-10 overflow-hidden">
-            ${pub.descripcion}
+          <p class="text-xs leading-relaxed mb-5 line-clamp-3 h-10 overflow-hidden" style="color: var(--secondary)">
+            ${descripcion}
           </p>
+          <div id="rating-${pub.id}" class="mb-3 flex items-center gap-1 text-xs" style="color: var(--tertiary)"></div>
         </div>
         <a
           href="/perfil?id=${pub.id}"
-          class="w-full bg-[#1A1A1A] hover:bg-[#252525] border border-[#2E2E2E] hover:border-emerald-500/30 text-white hover:text-emerald-400 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors mb-2 cursor-pointer"
+          class="w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors mb-2 cursor-pointer"
+          style="background: var(--button); border: 1px solid var(--border-stronger); color: var(--primary)"
         >
           📖 Ver Catálogo y Perfil
         </a>
@@ -347,14 +368,30 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     filtrarComercios()
   }
 
+  let ratingsCache: Map<string, { promedio: number; total: number }> = new Map()
+
+  async function cargarRatings() {
+    const contenedor = document.getElementById('contenedor-feed')
+    if (!contenedor) return
+    const ratingEls = contenedor.querySelectorAll('[id^="rating-"]')
+    const ids = Array.from(ratingEls).map((el) => el.id.replace('rating-', ''))
+    ratingsCache = await obtenerRatingsPorIds(ids)
+    ids.forEach((id) => {
+      const r = ratingsCache.get(id) || { promedio: 0, total: 0 }
+      const el = document.getElementById(`rating-${id}`)
+      if (el) {
+        el.innerHTML = renderizarEstrellas(r.promedio, r.total)
+      }
+    })
+  }
+
   function mezclarTarjetasEnPantalla() {
     const contenedor = document.getElementById('contenedor-feed')
     if (!contenedor) return
     const arrayTarjetas = Array.from(
       contenedor.querySelectorAll('.tarjeta-comercio')
     ) as HTMLDivElement[]
-    arrayTarjetas.sort(() => Math.random() - 0.5)
-    arrayTarjetas.forEach((tarjeta) => {
+    mezclarArray(arrayTarjetas).forEach((tarjeta) => {
       contenedor.appendChild(tarjeta)
     })
   }
@@ -362,42 +399,17 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
   function actualizarEstiloSelector() {
     const valor = filtroRubro.value
 
-    filtroRubro.classList.remove(
-      'bg-emerald-950/40',
-      'border-emerald-500',
-      'text-emerald-400',
-      'bg-slate-900/60',
-      'border-slate-500',
-      'text-slate-300',
-      'bg-amber-950/30',
-      'border-amber-600',
-      'text-amber-400',
-      'bg-teal-950/40',
-      'border-teal-500',
-      'text-teal-400',
-      'bg-rose-950/30',
-      'border-rose-500',
-      'text-rose-400',
-      'bg-indigo-950/30',
-      'border-indigo-500',
-      'text-indigo-400',
-      'bg-cyan-950/30',
-      'border-cyan-500',
-      'text-cyan-400'
-    )
-    filtroRubro.classList.add('bg-[#1E1E1E]', 'text-gray-300', 'border-[#333]')
-    iconoSelect.className =
-      'absolute inset-y-0 right-2 flex items-center pointer-events-none text-gray-500 transition-colors'
+    filtroRubro.style.background = 'var(--elevated)'
+    filtroRubro.style.color = 'var(--secondary)'
+    filtroRubro.style.borderColor = 'var(--border-strong)'
+    iconoSelect.style.color = 'var(--tertiary)'
 
     const configColor = COLORES_CATEGORIAS[valor as CategoriaRubro]
     if (valor && configColor) {
-      filtroRubro.classList.remove(
-        'bg-[#1E1E1E]',
-        'text-gray-300',
-        'border-[#333]'
-      )
-      filtroRubro.classList.add(configColor.bg, configColor.border, configColor.text)
-      iconoSelect.className = `absolute inset-y-0 right-2 flex items-center pointer-events-none ${configColor.text} transition-colors`
+      filtroRubro.style.background = `rgba(${configColor.rgb}, 0.3)`
+      filtroRubro.style.color = `rgb(${configColor.rgb})`
+      filtroRubro.style.borderColor = `rgba(${configColor.rgb}, 0.6)`
+      iconoSelect.style.color = `rgb(${configColor.rgb})`
     }
   }
 
@@ -441,15 +453,17 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
   function resetearEstilosBotones() {
     ;[btnServicios, btnVentas].forEach((btn) => {
       if (!btn) return
-      btn.classList.remove('bg-white', 'text-black', 'border-white')
-      btn.classList.add('bg-[#1E1E1E]', 'text-white', 'border-[#333]')
+      btn.style.background = 'var(--elevated)'
+      btn.style.color = 'var(--primary)'
+      btn.style.borderColor = 'var(--border-strong)'
     })
   }
 
   function activarEstiloBoton(btn: HTMLButtonElement) {
     if (!btn) return
-    btn.classList.remove('bg-[#1E1E1E]', 'text-white', 'border-[#333]')
-    btn.classList.add('bg-white', 'text-black', 'border-white')
+    btn.style.background = 'var(--primary)'
+    btn.style.color = 'var(--surface)'
+    btn.style.borderColor = 'var(--primary)'
   }
 
   btnServicios?.addEventListener('click', () => {
@@ -484,6 +498,7 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     mezclarTarjetasEnPantalla()
     actualizarEstiloSelector()
     filtrarComercios()
+    cargarRatings()
   })
 
   selectorCiudad?.addEventListener('change', () => {
@@ -491,6 +506,7 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     guardarUltimaCiudad(seleccion)
     actualizarIndicadorLocalidad(seleccion)
     renderizarFeedCliente()
+    cargarRatings()
   })
 
   poblarSelectorLocalidades()
