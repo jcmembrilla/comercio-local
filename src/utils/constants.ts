@@ -9,7 +9,7 @@ export interface Producto {
 export interface PerfilComercio {
   id: string
   email: string
-  nombre_emprendimiento: string
+  nombreEmprendimiento: string
   categoria:
     | 'comidas'
     | 'oficios'
@@ -25,7 +25,7 @@ export interface PerfilComercio {
   direccion?: string
   lat?: number
   lng?: number
-  sitio_web?: string
+  sitioWeb?: string
   historia?: string
   productos: Producto[]
   fotoLogo?: string
@@ -63,7 +63,31 @@ export const CIUDADES_PREDEFINIDAS = [
   'Rauch'
 ] as const
 
-export type CiudadPredefinida = (typeof CIUDADES_PREDEFINIDAS)[number]
+export const DOMINIOS_DESCARTABLES = [
+  'mailinator.com',
+  'tempmail.com',
+  '10minutemail.com',
+  'guerrillamail.com',
+  'throwaway.email',
+  'yopmail.com',
+  'sharklasers.com',
+  'trashmail.com',
+  'temp-mail.org',
+  'fakeinbox.com',
+  'mailnator.com',
+  'mailexpire.com',
+  'mintemail.com',
+  'spambox.us',
+  'tempinbox.com',
+  'dispostable.com',
+  'mailcatch.com',
+  'emailfake.com',
+  'getnada.com',
+  'burnermail.io',
+  'inboxkitten.com',
+  'mohmal.com',
+  'emailondeck.com'
+]
 
 export const COLORES_CATEGORIAS: Record<
   CategoriaRubro,
@@ -72,57 +96,65 @@ export const COLORES_CATEGORIAS: Record<
   comidas: {
     bg: 'bg-emerald-950/40',
     border: 'border-emerald-500',
-    text: 'text-emerald-400',
-    fullClass: 'bg-emerald-950/40 border-emerald-500/50 text-emerald-400',
+    text: 'text-emerald-400 light:text-emerald-700',
+    fullClass:
+      'bg-emerald-950/40 light:bg-emerald-100 border-emerald-500/50 text-emerald-400 light:text-emerald-700',
     rgb: '5, 150, 105'
   },
   oficios: {
     bg: 'bg-slate-900/60',
     border: 'border-slate-500',
-    text: 'text-slate-300',
-    fullClass: 'bg-slate-900/60 border-slate-500/50 text-slate-300',
+    text: 'text-slate-300 light:text-slate-700',
+    fullClass:
+      'bg-slate-900/60 light:bg-slate-200 border-slate-500/50 text-slate-300 light:text-slate-700',
     rgb: '100, 116, 139'
   },
   artesanias: {
     bg: 'bg-amber-950/30',
     border: 'border-amber-600',
-    text: 'text-amber-400',
-    fullClass: 'bg-amber-950/30 border-amber-600/50 text-amber-400',
+    text: 'text-amber-400 light:text-amber-700',
+    fullClass:
+      'bg-amber-950/30 light:bg-amber-100 border-amber-600/50 text-amber-400 light:text-amber-700',
     rgb: '217, 119, 6'
   },
   jardineria: {
     bg: 'bg-teal-950/40',
     border: 'border-teal-500',
-    text: 'text-teal-400',
-    fullClass: 'bg-teal-950/40 border-teal-500/50 text-teal-400',
+    text: 'text-teal-400 light:text-teal-700',
+    fullClass:
+      'bg-teal-950/40 light:bg-teal-100 border-teal-500/50 text-teal-400 light:text-teal-700',
     rgb: '20, 184, 166'
   },
   estetica: {
     bg: 'bg-rose-950/30',
     border: 'border-rose-500',
-    text: 'text-rose-400',
-    fullClass: 'bg-rose-950/30 border-rose-500/50 text-rose-400',
+    text: 'text-rose-400 light:text-rose-700',
+    fullClass:
+      'bg-rose-950/30 light:bg-rose-100 border-rose-500/50 text-rose-400 light:text-rose-700',
     rgb: '244, 63, 94'
   },
   educacion: {
     bg: 'bg-indigo-950/30',
     border: 'border-indigo-500',
-    text: 'text-indigo-400',
-    fullClass: 'bg-indigo-950/30 border-indigo-500/50 text-indigo-400',
+    text: 'text-indigo-400 light:text-indigo-700',
+    fullClass:
+      'bg-indigo-950/30 light:bg-indigo-100 border-indigo-500/50 text-indigo-400 light:text-indigo-700',
     rgb: '99, 102, 241'
   },
   tecnologia: {
     bg: 'bg-cyan-950/30',
     border: 'border-cyan-500',
-    text: 'text-cyan-400',
-    fullClass: 'bg-cyan-950/30 border-cyan-500/50 text-cyan-400',
+    text: 'text-cyan-400 light:text-cyan-700',
+    fullClass:
+      'bg-cyan-950/30 light:bg-cyan-100 border-cyan-500/50 text-cyan-400 light:text-cyan-700',
     rgb: '6, 182, 212'
   },
   otros: {
     bg: 'bg-zinc-900',
     border: 'border-zinc-600',
-    text: 'text-zinc-400',
-    fullClass: 'bg-zinc-900 border-zinc-600 text-zinc-400',
+    text: 'text-zinc-400 light:text-zinc-700',
+    fullClass:
+      'bg-zinc-900 light:bg-zinc-200 border-zinc-600 text-zinc-400 light:text-zinc-700',
     rgb: '82, 82, 91'
   }
 }

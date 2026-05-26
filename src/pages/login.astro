@@ -3,14 +3,16 @@ import Layout from '../layouts/Layout.astro'
 import BackButton from '../components/BackButton.astro'
 import Footer from '../components/Footer.astro'
 import Alert from '../components/Alert.astro'
-import SocialButtons from '../components/SocialButtons.astro'
 ---
 
 <Layout title="Comercio Local - Iniciar Sesión">
   <main
     class="max-w-md mx-auto px-6 pt-12 pb-12 flex flex-col min-h-screen justify-between"
   >
-    <div class="w-full">
+    <div class="loading-screen" id="loading-screen">
+      <div class="loading-spinner"></div>
+    </div>
+    <div class="w-full" id="login-content">
       <div
         class="flex items-center justify-between pb-4 mb-8"
         style="border-bottom: 1px solid var(--border-strongest)"
@@ -28,8 +30,6 @@ import SocialButtons from '../components/SocialButtons.astro'
         class="p-6 rounded-3xl border backdrop-blur-md"
         style="background: var(--elevated-60); border-color: var(--border-strongest)"
       >
-        <SocialButtons mode="login" />
-
         <Alert type="error" id="alerta-error" />
 
         <form id="form-login" class="space-y-5">
@@ -87,21 +87,6 @@ import SocialButtons from '../components/SocialButtons.astro'
           Registrate acá
         </a>
       </div>
-
-      <div
-        class="mt-8 p-4 rounded-2xl text-xs space-y-2"
-        style="background: var(--modal-overlay); border: 1px solid var(--border-strong); color: var(--quaternary)"
-      >
-        <p class="font-bold" style="color: var(--secondary)">
-          💡 Cuentas de Demostración:
-        </p>
-        <p>
-          • <strong>Mabel:</strong> mabel@local.com / mabel123 (Comida, Ayacucho)
-        </p>
-        <p>
-          • <strong>Carlos:</strong> carlos@local.com / carlos123 (Oficios, Tandil)
-        </p>
-      </div>
     </div>
 
     <Footer showLinks={false} />
@@ -115,6 +100,8 @@ import SocialButtons from '../components/SocialButtons.astro'
   const sesion = await obtenerSesionActiva()
   if (sesion) {
     window.location.href = '/dashboard'
+  } else {
+    document.getElementById('loading-screen')?.classList.add('hidden')
   }
 
   const form = document.getElementById('form-login') as HTMLFormElement

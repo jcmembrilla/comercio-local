@@ -27,4 +27,4 @@
 - Never use `any` — prefer `unknown` or proper types
 - Components go in `src/components/`, utilities in `src/utils/`
 - All JS logic is vanilla (no React/Vue/Svelte)
-- dark mode only, Tailwind CSS v4
+- dark/light mode supported, Tailwind CSS v4

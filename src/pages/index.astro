@@ -2,74 +2,7 @@
 import Layout from '../layouts/Layout.astro'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
-import TarjetaComercio from '../components/TarjetaComercio.astro'
 import { CATEGORIAS } from '../utils/constants'
-import type { PerfilComercio } from '../utils/constants'
-
-const publicacionesSemilla: PerfilComercio[] = [
-  {
-    id: 'usr_mabel',
-    email: '',
-    nombre_emprendimiento: 'La Cocina de Mabel',
-    categoria: 'comidas',
-    descripcion: 'Empanadas caseras cortadas a cuchillo y tartas dulces por encargo.',
-    whatsapp: '5491123456789',
-    ciudad: 'Ayacucho',
-    fotoLogo: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=150&auto=format&fit=crop&q=60',
-    fotoPortada: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&auto=format&fit=crop&q=80',
-    productos: []
-  },
-  {
-    id: 'usr_carlos',
-    email: '',
-    nombre_emprendimiento: 'Carlos Albornoz',
-    categoria: 'oficios',
-    descripcion: 'Plomería en general, destapaciones y reparaciones de artefactos del hogar. Urgencias 24hs.',
-    whatsapp: '5491198765432',
-    ciudad: 'Tandil',
-    fotoLogo: '',
-    fotoPortada: '',
-    productos: []
-  },
-  {
-    id: 'usr_esencias',
-    email: '',
-    nombre_emprendimiento: 'Esencias del Alma',
-    categoria: 'artesanias',
-    descripcion: 'Sahumerios artesanales, velas de soja naturales y esencias orgánicas para el hogar.',
-    whatsapp: '5491155555555',
-    ciudad: 'Ayacucho',
-    fotoLogo: 'https://images.unsplash.com/photo-1602928321679-560bb453f190?w=150&auto=format&fit=crop&q=60',
-    fotoPortada: '',
-    productos: []
-  },
-  {
-    id: 'usr_elena',
-    email: '',
-    nombre_emprendimiento: 'Elena Martínez',
-    categoria: 'jardineria',
-    descripcion: 'Mantenimiento de espacios verdes, corte de pasto, poda de árboles y diseño de jardines residenciales.',
-    whatsapp: '5491144444444',
-    ciudad: 'Rauch',
-    fotoLogo: '',
-    fotoPortada: '',
-    productos: []
-  },
-  {
-    id: 'usr_tapestry',
-    email: '',
-    nombre_emprendimiento: 'Taller de Tapices Renacer',
-    categoria: 'artesanias',
-    descripcion: 'Tapices y tejidos artesanales hechos a mano con técnicas tradicionales. Personalización por encargo.',
-    whatsapp: '5491133333333',
-    ciudad: 'Balcarce',
-    fotoLogo: '',
-    fotoPortada: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80',
-    productos: []
-  }
-]
-
-const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random())
 ---
 
 <Layout title="Comercio Local - Cartelera Comunitaria">
@@ -146,7 +79,8 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
       <div class="w-full pt-2 mb-8 max-w-lg mx-auto">
         <a
           href="/registro"
-          class="block w-full bg-white text-black text-center py-3.5 rounded-2xl text-base font-bold hover:bg-gray-200 active:scale-[0.99] transition-all border border-transparent focus:outline-none focus:border-emerald-500"
+          class="block w-full text-center py-3.5 rounded-2xl text-base font-bold active:scale-[0.99] transition-all border cursor-pointer"
+          style="background: var(--elevated); color: var(--primary); border-color: var(--border-strong)"
         >
           Crear una cuenta comercial o profesional
         </a>
@@ -161,11 +95,7 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
           Descubrí en tu localidad
         </h2>
 
-        <div id="contenedor-feed" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {publicacionesSEO.map((pub) => (
-            <TarjetaComercio perfil={pub} />
-          ))}
-        </div>
+        <div id="contenedor-feed" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
       </div>
     </div>
 
@@ -180,18 +110,15 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     obtenerUltimaCiudad,
     guardarUltimaCiudad,
     obtenerCiudadesActivas,
-    obtenerRatingsPorIds
   } from '../utils/storage'
-  import { COLORES_CATEGORIAS, RESPALDOS_POR_RUBRO } from '../utils/constants'
+  import { detectarLocalidad } from '../utils/geolocation'
+  import { COLORES_CATEGORIAS, RESPALDOS_POR_RUBRO, CIUDADES_PREDEFINIDAS } from '../utils/constants'
   import type { CategoriaRubro } from '../utils/constants'
-  import { renderizarEstrellas, escapeHtml, mezclarArray } from '../utils/formatters'
+  import { escapeHtml, mezclarArray } from '../utils/formatters'
 
   const selectorCiudad = document.getElementById(
     'selector-ciudad-cabecera'
   ) as HTMLSelectElement
-  const localidadDetectadaTexto = document.getElementById(
-    'localidad-detectada-texto'
-  ) as HTMLParagraphElement
   const btnAuth = document.getElementById(
     'btn-auth-cabecera'
   ) as HTMLAnchorElement
@@ -228,50 +155,44 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     btnAuth.innerHTML = '👤 Mi Perfil'
   }
 
-  function poblarSelectorLocalidades() {
+  async function poblarSelectorLocalidades() {
     if (!selectorCiudad) return
 
-    const ciudadSeleccionada = obtenerUltimaCiudad()
+    let ciudadSeleccionada = obtenerUltimaCiudad()
+
+    if (!ciudadSeleccionada) {
+      const detectada = await detectarLocalidad(ciudadesActivas)
+      if (detectada) {
+        guardarUltimaCiudad(detectada)
+        ciudadSeleccionada = detectada
+      } else {
+        ciudadSeleccionada = ciudadesActivas[0] || CIUDADES_PREDEFINIDAS[0]
+        guardarUltimaCiudad(ciudadSeleccionada)
+      }
+    }
 
     selectorCiudad.innerHTML = ''
 
-    const optTodas = document.createElement('option')
-    optTodas.value = 'todas'
-    optTodas.textContent = '📍 Todas las localidades'
-    selectorCiudad.appendChild(optTodas)
-
+    const ciudadFinal = ciudadSeleccionada
     ciudadesActivas.forEach((c) => {
       const opt = document.createElement('option')
       opt.value = c
       opt.textContent = `📍 ${c}`
+      if (c === ciudadFinal) opt.selected = true
       selectorCiudad.appendChild(opt)
     })
 
     selectorCiudad.value = ciudadSeleccionada
-
-    actualizarIndicadorLocalidad(ciudadSeleccionada)
-  }
-
-  function actualizarIndicadorLocalidad(ciudad: string) {
-    if (!localidadDetectadaTexto) return
-    if (ciudad === 'todas') {
-      localidadDetectadaTexto.textContent = 'Localidad: Todas'
-    } else {
-      const formatted =
-        ciudad.trim().charAt(0).toUpperCase() + ciudad.trim().slice(1)
-      localidadDetectadaTexto.textContent = `Localidad: ${formatted}`
-    }
   }
 
   function renderizarFeedCliente() {
     if (!contenedorFeed) return
     contenedorFeed.innerHTML = ''
 
-    const ciudadActual = selectorCiudad ? selectorCiudad.value : 'todas'
-    const publicacionesFiltradas = publicaciones.filter((pub) => {
-      if (ciudadActual === 'todas') return true
-      return pub.ciudad.toLowerCase() === ciudadActual.toLowerCase()
-    })
+    const ciudadActual = selectorCiudad ? selectorCiudad.value : ciudadesActivas[0] || ''
+    const publicacionesFiltradas = publicaciones.filter(
+      (pub) => pub.ciudad.toLowerCase() === ciudadActual.toLowerCase()
+    )
 
     if (publicacionesFiltradas.length === 0) {
       contenedorFeed.innerHTML = `
@@ -289,7 +210,7 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     publicacionesFiltradas.forEach((pub) => {
       const configColor =
         COLORES_CATEGORIAS[pub.categoria] || COLORES_CATEGORIAS.otros
-      const nombre = escapeHtml(pub.nombre_emprendimiento)
+      const nombre = escapeHtml(pub.nombreEmprendimiento)
       const descripcion = escapeHtml(pub.descripcion)
       const ciudad = escapeHtml(pub.ciudad)
       const categoria = pub.categoria
@@ -314,7 +235,7 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
       const card = document.createElement('div')
       card.className = `tarjeta-comercio p-5 rounded-3xl border-2 flex flex-col justify-between h-full`
       card.style.cssText = `background: rgba(${configColor.rgb}, 0.22); border-color: var(--border); color: var(--secondary)`
-      card.setAttribute('data-nombre', pub.nombre_emprendimiento.toLowerCase())
+      card.setAttribute('data-nombre', pub.nombreEmprendimiento.toLowerCase())
       card.setAttribute('data-categoria', categoria)
       card.setAttribute('data-descripcion', pub.descripcion.toLowerCase())
 
@@ -342,7 +263,6 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
           <p class="text-xs leading-relaxed mb-5 line-clamp-3 h-10 overflow-hidden" style="color: var(--secondary)">
             ${descripcion}
           </p>
-          <div id="rating-${pub.id}" class="mb-3 flex items-center gap-1 text-xs" style="color: var(--tertiary)"></div>
         </div>
         <a
           href="/perfil?id=${pub.id}"
@@ -352,7 +272,7 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
           📖 Ver Catálogo y Perfil
         </a>
         <a
-          href="https://wa.me/${pub.whatsapp}?text=Hola%20${encodeURIComponent(pub.nombre_emprendimiento)},%20vi%20tu%20perfil%20en%20Comercio%20Local%20y%20me%20interesa%20lo%20que%20ofrecés."
+          href="https://wa.me/${pub.whatsapp}?text=Hola%20${encodeURIComponent(pub.nombreEmprendimiento)},%20vi%20tu%20perfil%20en%20Comercio%20Local%20y%20me%20interesa%20lo%20que%20ofrecés."
           target="_blank"
           rel="noopener noreferrer"
           class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors active:scale-[0.99] cursor-pointer"
@@ -366,23 +286,6 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     })
 
     filtrarComercios()
-  }
-
-  let ratingsCache: Map<string, { promedio: number; total: number }> = new Map()
-
-  async function cargarRatings() {
-    const contenedor = document.getElementById('contenedor-feed')
-    if (!contenedor) return
-    const ratingEls = contenedor.querySelectorAll('[id^="rating-"]')
-    const ids = Array.from(ratingEls).map((el) => el.id.replace('rating-', ''))
-    ratingsCache = await obtenerRatingsPorIds(ids)
-    ids.forEach((id) => {
-      const r = ratingsCache.get(id) || { promedio: 0, total: 0 }
-      const el = document.getElementById(`rating-${id}`)
-      if (el) {
-        el.innerHTML = renderizarEstrellas(r.promedio, r.total)
-      }
-    })
   }
 
   function mezclarTarjetasEnPantalla() {
@@ -498,18 +401,15 @@ const publicacionesSEO = [...publicacionesSemilla].sort(() => 0.5 - Math.random(
     mezclarTarjetasEnPantalla()
     actualizarEstiloSelector()
     filtrarComercios()
-    cargarRatings()
   })
 
   selectorCiudad?.addEventListener('change', () => {
     const seleccion = selectorCiudad.value
     guardarUltimaCiudad(seleccion)
-    actualizarIndicadorLocalidad(seleccion)
     renderizarFeedCliente()
-    cargarRatings()
   })
 
-  poblarSelectorLocalidades()
+  await poblarSelectorLocalidades()
   renderizarFeedCliente()
   mezclarTarjetasEnPantalla()
   actualizarEstiloSelector()

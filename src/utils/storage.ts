@@ -1,30 +1,46 @@
 import { supabase } from './supabase'
-import type { PerfilComercio, Producto } from './constants'
-import { RUBROS_FOTO_OPCIONAL } from './constants'
-
-export interface UsuarioCuenta extends PerfilComercio {
-  password?: string
-}
+import type { PerfilComercio, Producto, CategoriaRubro } from './constants'
+import { RUBROS_FOTO_OPCIONAL, CATEGORIAS } from './constants'
+import type { ProfileRow, ProductRow } from './database.types'
+import { procesarImagen } from './images'
 
 const STORAGE_KEYS = {
   LAST_CITY: 'comercio_local_last_city_v2'
 }
 
+function isCategoriaRubro(value: unknown): value is CategoriaRubro {
+  return (
+    typeof value === 'string' && CATEGORIAS.some((cat) => cat.value === value)
+  )
+}
+
+function validarCategoriaRubro(value: unknown): CategoriaRubro | null {
+  return isCategoriaRubro(value) ? value : null
+}
+
 // ─── Mappers ────────────────────────────────────────
 
-function mapRowToPerfil(row: any): PerfilComercio {
+function mapRowToPerfil(row: ProfileRow): PerfilComercio {
+  const categoria = isCategoriaRubro(row.categoria) ? row.categoria : 'otros'
+
+  if (categoria === 'otros' && row.categoria !== 'otros') {
+    console.warn(
+      `Categoria inválida para el perfil ${row.id}: "${row.categoria}". Usando fallback "otros".`
+    )
+  }
+
   return {
     id: row.id,
     email: row.email || '',
-    nombre_emprendimiento: row.nombre_emprendimiento,
-    categoria: row.categoria,
+    nombreEmprendimiento: row.nombre_emprendimiento,
+    categoria,
     descripcion: row.descripcion || '',
     whatsapp: row.whatsapp || '',
     ciudad: row.ciudad || '',
     direccion: row.direccion || '',
     lat: row.lat,
     lng: row.lng,
-    sitio_web: row.sitio_web || '',
+    sitioWeb: row.sitio_web || '',
     historia: row.historia || '',
     fotoLogo: row.foto_logo || '',
     fotoPortada: row.foto_portada || '',
@@ -32,7 +48,7 @@ function mapRowToPerfil(row: any): PerfilComercio {
   }
 }
 
-function mapRowToProducto(row: any): Producto {
+function mapRowToProducto(row: ProductRow): Producto {
   return {
     id: row.id,
     titulo: row.titulo,
@@ -49,10 +65,12 @@ export async function obtenerPublicaciones(
 ): Promise<PerfilComercio[]> {
   let query = supabase
     .from('profiles')
-    .select('*, products(*)')
+    .select(
+      'id, nombre_emprendimiento, categoria, descripcion, whatsapp, ciudad, direccion, lat, lng, foto_logo, foto_portada, sitio_web, historia, created_at, products(*)'
+    )
     .order('created_at', { ascending: false })
 
-  if (ciudadFiltro && ciudadFiltro !== 'todas') {
+  if (ciudadFiltro) {
     query = query.eq('ciudad', ciudadFiltro)
   }
 
@@ -69,7 +87,9 @@ export async function obtenerPerfilPorId(
 ): Promise<PerfilComercio | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('*, products(*)')
+    .select(
+      'id, nombre_emprendimiento, categoria, descripcion, whatsapp, ciudad, direccion, lat, lng, foto_logo, foto_portada, sitio_web, historia, created_at, products(*)'
+    )
     .eq('id', id)
     .maybeSingle()
 
@@ -103,6 +123,11 @@ export async function registrarUsuario(
 ): Promise<{ success: boolean; message: string }> {
   const emailNorm = email.toLowerCase().trim()
 
+  const categoria = validarCategoriaRubro(datos.categoria)
+  if (!categoria) {
+    return { success: false, message: 'Categoría inválida.' }
+  }
+
   const { data: existente } = await supabase
     .from('profiles')
     .select('id')
@@ -128,19 +153,32 @@ export async function registrarUsuario(
     }
   }
 
+  const userId = authData.user.id
+  let fotoLogo: string
+  let fotoPortada: string
+  try {
+    fotoLogo = await procesarImagen(datos.fotoLogo, userId, 'logo')
+    fotoPortada = await procesarImagen(datos.fotoPortada, userId, 'portada')
+  } catch (e: unknown) {
+    return {
+      success: false,
+      message: e instanceof Error ? e.message : 'Error al subir las imágenes.'
+    }
+  }
+
   const { error: insertError } = await supabase.from('profiles').insert({
-    id: authData.user.id,
+    id: userId,
     email: emailNorm,
-    nombre_emprendimiento: datos.nombre_emprendimiento,
-    categoria: datos.categoria,
+    nombre_emprendimiento: datos.nombreEmprendimiento,
+    categoria,
     descripcion: datos.descripcion || '',
     whatsapp: datos.whatsapp || '',
     ciudad: datos.ciudad || '',
     direccion: datos.direccion || '',
-    sitio_web: datos.sitio_web || '',
+    sitio_web: datos.sitioWeb || '',
     historia: datos.historia || '',
-    foto_logo: datos.fotoLogo || '',
-    foto_portada: datos.fotoPortada || ''
+    foto_logo: fotoLogo,
+    foto_portada: fotoPortada
   })
 
   if (insertError) {
@@ -210,19 +248,36 @@ export async function actualizarPerfil(
   id: string,
   datos: Omit<PerfilComercio, 'id' | 'email' | 'productos' | 'lat' | 'lng'>
 ): Promise<{ success: boolean; message: string }> {
+  const categoria = validarCategoriaRubro(datos.categoria)
+  if (!categoria) {
+    return { success: false, message: 'Categoría inválida.' }
+  }
+
+  let fotoLogo: string
+  let fotoPortada: string
+  try {
+    fotoLogo = await procesarImagen(datos.fotoLogo, id, 'logo')
+    fotoPortada = await procesarImagen(datos.fotoPortada, id, 'portada')
+  } catch (e: unknown) {
+    return {
+      success: false,
+      message: e instanceof Error ? e.message : 'Error al subir las imágenes.'
+    }
+  }
+
   const { error } = await supabase
     .from('profiles')
     .update({
-      nombre_emprendimiento: datos.nombre_emprendimiento,
-      categoria: datos.categoria,
+      nombre_emprendimiento: datos.nombreEmprendimiento,
+      categoria,
       descripcion: datos.descripcion || '',
       whatsapp: datos.whatsapp || '',
       ciudad: datos.ciudad || '',
       direccion: datos.direccion || '',
-      sitio_web: datos.sitio_web || '',
+      sitio_web: datos.sitioWeb || '',
       historia: datos.historia || '',
-      foto_logo: datos.fotoLogo || '',
-      foto_portada: datos.fotoPortada || ''
+      foto_logo: fotoLogo,
+      foto_portada: fotoPortada
     })
     .eq('id', id)
 
@@ -248,8 +303,8 @@ export async function agregarProducto(
     return { success: false, message: 'Usuario no encontrado.' }
   }
 
-  const categoria = perfil.categoria
-  const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria as any)
+  const categoria = perfil.categoria as CategoriaRubro
+  const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria)
   const tieneFoto = !!(producto.foto && producto.foto.trim())
   const tieneDescripcion = !!(
     producto.descripcion && producto.descripcion.trim()
@@ -294,29 +349,51 @@ export async function agregarProducto(
     }
   }
 
+  let fotoUrl = ''
+  if (tieneFoto && producto.foto) {
+    try {
+      fotoUrl = await procesarImagen(
+        producto.foto,
+        usuarioId,
+        `products/${crypto.randomUUID()}`
+      )
+    } catch (e: unknown) {
+      return {
+        success: false,
+        message: e instanceof Error ? e.message : 'Error al subir la imagen.'
+      }
+    }
+  }
+
   const nuevoProducto = {
-    id: `prod_${Date.now()}`,
     profile_id: usuarioId,
     titulo: producto.titulo.trim(),
     descripcion: producto.descripcion.trim(),
-    precio: producto.precio !== undefined ? Number(producto.precio) : null,
-    foto: tieneFoto ? producto.foto!.trim() : ''
+    precio: producto.precio != null ? Number(producto.precio) : null,
+    foto: fotoUrl
   }
 
-  const { error } = await supabase.from('products').insert(nuevoProducto)
-  if (error) {
-    return { success: false, message: error.message }
+  const { data, error } = await supabase
+    .from('products')
+    .insert(nuevoProducto)
+    .select()
+    .single()
+  if (error || !data) {
+    return {
+      success: false,
+      message: error?.message || 'Error al guardar la publicación'
+    }
   }
 
   return {
     success: true,
     message: '¡Publicación agregada con éxito!',
     producto: {
-      id: nuevoProducto.id,
-      titulo: nuevoProducto.titulo,
-      descripcion: nuevoProducto.descripcion,
-      precio: nuevoProducto.precio ?? undefined,
-      foto: nuevoProducto.foto
+      id: data.id,
+      titulo: data.titulo,
+      descripcion: data.descripcion,
+      precio: data.precio ?? undefined,
+      foto: data.foto
     }
   }
 }
@@ -336,8 +413,8 @@ export async function editarProducto(
     return { success: false, message: 'Usuario no encontrado.' }
   }
 
-  const categoria = perfil.categoria
-  const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria as any)
+  const categoria = perfil.categoria as CategoriaRubro
+  const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria)
   const tieneFoto = !!(nuevosDatos.foto && nuevosDatos.foto.trim())
   const tieneDescripcion = !!(
     nuevosDatos.descripcion && nuevosDatos.descripcion.trim()
@@ -376,14 +453,29 @@ export async function editarProducto(
     }
   }
 
+  let fotoUrl = ''
+  if (tieneFoto && nuevosDatos.foto) {
+    try {
+      fotoUrl = await procesarImagen(
+        nuevosDatos.foto,
+        usuarioId,
+        `products/${crypto.randomUUID()}`
+      )
+    } catch (e: unknown) {
+      return {
+        success: false,
+        message: e instanceof Error ? e.message : 'Error al subir la imagen.'
+      }
+    }
+  }
+
   const { error } = await supabase
     .from('products')
     .update({
       titulo: nuevosDatos.titulo.trim(),
       descripcion: nuevosDatos.descripcion.trim(),
-      precio:
-        nuevosDatos.precio !== undefined ? Number(nuevosDatos.precio) : null,
-      foto: tieneFoto ? nuevosDatos.foto!.trim() : ''
+      precio: nuevosDatos.precio != null ? Number(nuevosDatos.precio) : null,
+      foto: fotoUrl
     })
     .eq('id', String(productoId))
     .eq('profile_id', usuarioId)
@@ -413,85 +505,11 @@ export async function eliminarProducto(
   }
 }
 
-// ─── Calificaciones (ratings) ──────────────────────
-
-export async function agregarRating(
-  profileId: string,
-  rating: number
-): Promise<{ success: boolean; message: string }> {
-  if (rating < 1 || rating > 5) {
-    return { success: false, message: 'La calificación debe ser entre 1 y 5.' }
-  }
-
-  const { error } = await supabase.from('ratings').insert({
-    id: `rat_${Date.now()}`,
-    profile_id: profileId,
-    rating
-  })
-
-  if (error) {
-    return { success: false, message: error.message }
-  }
-  return { success: true, message: 'Calificación guardada.' }
-}
-
-export async function obtenerRating(
-  profileId: string
-): Promise<{ promedio: number; total: number; distribucion: number[] }> {
-  const { data, error } = await supabase
-    .from('ratings')
-    .select('rating')
-    .eq('profile_id', profileId)
-
-  if (error || !data || data.length === 0) {
-    return { promedio: 0, total: 0, distribucion: [0, 0, 0, 0, 0] }
-  }
-
-  const total = data.length
-  const suma = data.reduce((acc, r) => acc + r.rating, 0)
-  const promedio = Math.round((suma / total) * 10) / 10
-
-  const distribucion = [0, 0, 0, 0, 0]
-  data.forEach((r) => {
-    distribucion[r.rating - 1]++
-  })
-
-  return { promedio, total, distribucion }
-}
-
-export async function obtenerRatingsPorIds(
-  ids: string[]
-): Promise<Map<string, { promedio: number; total: number }>> {
-  if (ids.length === 0) return new Map()
-  const { data, error } = await supabase
-    .from('ratings')
-    .select('profile_id, rating')
-    .in('profile_id', ids)
-
-  if (error || !data) return new Map()
-
-  const agrupado = new Map<string, number[]>()
-  data.forEach((r) => {
-    const arr = agrupado.get(r.profile_id) || []
-    arr.push(r.rating)
-    agrupado.set(r.profile_id, arr)
-  })
-
-  const resultado = new Map<string, { promedio: number; total: number }>()
-  agrupado.forEach((ratings, id) => {
-    const total = ratings.length
-    const suma = ratings.reduce((a, b) => a + b, 0)
-    const promedio = Math.round((suma / total) * 10) / 10
-    resultado.set(id, { promedio, total })
-  })
-  return resultado
-}
-
 // ─── Utilidades (localStorage) ─────────────────────
 
-export function obtenerUltimaCiudad(): string {
-  if (typeof window === 'undefined') return 'todas'
-  return localStorage.getItem(STORAGE_KEYS.LAST_CITY) || 'todas'
+export function obtenerUltimaCiudad(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem(STORAGE_KEYS.LAST_CITY)
 }
 
 export function guardarUltimaCiudad(ciudad: string) {

@@ -8,7 +8,6 @@
   --elevated-60: rgba(30, 30, 30, 0.6);
   --elevated-40: rgba(30, 30, 30, 0.4);
   --button: #1a1a1a;
-  --button-hover: #252525;
   --primary: #fff;
   --secondary: #d1d5db;
   --tertiary: #6b7280;
@@ -35,7 +34,6 @@
   --elevated-60: rgba(255, 255, 255, 0.8);
   --elevated-40: rgba(255, 255, 255, 0.6);
   --button: #e5e7eb;
-  --button-hover: #d1d5db;
   --primary: #1a1a1a;
   --secondary: #4b5563;
   --tertiary: #6b7280;
@@ -54,4 +52,35 @@
   --alert-success-border: #86efac;
   --alert-success-text: #166534;
   --modal-overlay: rgba(0, 0, 0, 0.3);
+}
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--body-bg);
+  z-index: 9999;
+  transition: opacity 0.3s;
+}
+
+.loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-strong);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

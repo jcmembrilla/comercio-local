@@ -13,9 +13,14 @@ const {
   maxSize = 'JPG, PNG, WebP · Máx 2MB'
 } = Astro.props
 
-const inputId = `foto_${id}`
-const previewId = `preview-${id}`
-const placeholderId = `placeholder-${id}`
+function capitalize(s: string) {
+  return s && s.length ? s.charAt(0).toUpperCase() + s.slice(1) : s
+}
+
+const suffix = capitalize(id)
+const inputId = `foto${suffix}`
+const previewId = `preview${suffix}`
+const placeholderId = `placeholder${suffix}`
 ---
 
 <div>

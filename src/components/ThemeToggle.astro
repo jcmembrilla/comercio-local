@@ -34,6 +34,21 @@
     ></path>
   </svg>
 </button>
+<script>
+  ;(function () {
+    const s = document.getElementById('icono-sol'),
+      l = document.getElementById('icono-luna')
+    if (!s || !l) return
+    const t = localStorage.getItem('comercio_local_theme')
+    if (t === 'dark') {
+      s.classList.remove('hidden')
+      l.classList.add('hidden')
+    } else {
+      s.classList.add('hidden')
+      l.classList.remove('hidden')
+    }
+  })()
+</script>
 
 <script>
   import { obtenerTema, cambiarTema } from '../utils/theme'
@@ -43,10 +58,6 @@
   const iconoLuna = document.getElementById('icono-luna') as HTMLElement
 
   if (btn && iconoSol && iconoLuna) {
-    const tema = obtenerTema()
-    iconoSol.classList.toggle('hidden', tema === 'light')
-    iconoLuna.classList.toggle('hidden', tema === 'dark')
-
     btn.addEventListener('click', () => {
       const actual = obtenerTema()
       const nuevo = actual === 'dark' ? 'light' : 'dark'

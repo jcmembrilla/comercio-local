@@ -1,43 +1,41 @@
-# Astro Starter Kit: Minimal
+# Comercio Local
 
-```sh
-pnpm create astro@latest -- --template minimal
+Cartelera digital comunitaria para visibilizar emprendedores, productores y trabajadores independientes de tu localidad.
+
+## Stack
+
+- **Framework:** Astro 4 (SSR con Netlify)
+- **Estilos:** Tailwind CSS v4
+- **Base de datos:** Supabase (PostgreSQL)
+- **Auth:** Supabase Auth (email/contraseña, sin confirmación)
+- **Hosting:** Netlify
+
+## Comandos
+
+| Comando             | Acción                         |
+| ------------------- | ------------------------------ |
+| `pnpm dev`          | Iniciar servidor de desarrollo |
+| `pnpm build`        | Build para producción          |
+| `pnpm preview`      | Preview del build              |
+| `pnpm typecheck`    | Verificar tipos TypeScript     |
+| `pnpm lint`         | Ejecutar ESLint                |
+| `pnpm format`       | Formatear con Prettier         |
+| `pnpm format:check` | Verificar formato              |
+| `pnpm test`         | Ejecutar tests (Vitest)        |
+
+## Variables de entorno
+
+Copiar `.env.example` a `.env` y completar:
+
+```
+PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Base de datos
 
-## 🚀 Project Structure
+El schema está en `scripts/supabase-schema.sql`. Para inicializar:
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `pnpm install`         | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+1. Crear proyecto en Supabase
+2. Ejecutar el schema en el SQL Editor
+3. Configurar Authentication (email confirmación desactivado)

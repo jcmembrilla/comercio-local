@@ -144,20 +144,6 @@ import Footer from '../components/Footer.astro'
             style="background: var(--elevated-40); border: 1px solid var(--border); color: var(--secondary)"
           >
           </div>
-
-          <div
-            id="perfil-rating"
-            class="hidden mt-6 flex flex-col items-center sm:items-start gap-2"
-          >
-            <div id="perfil-estrellas" class="flex items-center gap-1 text-xl">
-            </div>
-            <p
-              id="perfil-rating-info"
-              class="text-xs"
-              style="color: var(--tertiary)"
-            >
-            </p>
-          </div>
         </div>
       </div>
 
@@ -181,18 +167,13 @@ import Footer from '../components/Footer.astro'
 </Layout>
 
 <script>
-  import {
-    obtenerPerfilPorId,
-    obtenerRating,
-    agregarRating
-  } from '../utils/storage'
+  import { obtenerPerfilPorId } from '../utils/storage'
   import { COLORES_CATEGORIAS, RESPALDOS_POR_RUBRO } from '../utils/constants'
   import type { PerfilComercio, Producto } from '../utils/constants'
   import {
     calcularIniciales,
     construirLinkWhatsApp,
     detectarRedSocial,
-    renderizarEstrellas,
     escapeHtml
   } from '../utils/formatters'
 
@@ -230,13 +211,6 @@ import Footer from '../components/Footer.astro'
   const divHistoria = document.getElementById(
     'perfil-historia'
   ) as HTMLDivElement
-  const divRating = document.getElementById('perfil-rating') as HTMLDivElement
-  const divEstrellas = document.getElementById(
-    'perfil-estrellas'
-  ) as HTMLDivElement
-  const pRatingInfo = document.getElementById(
-    'perfil-rating-info'
-  ) as HTMLParagraphElement
 
   const linkWhatsapp = document.getElementById(
     'perfil-whatsapp-link'
@@ -282,7 +256,7 @@ import Footer from '../components/Footer.astro'
       imgLogo.classList.remove('hidden')
       spanIniciales.classList.add('hidden')
     } else {
-      const iniciales = calcularIniciales(p.nombre_emprendimiento)
+      const iniciales = calcularIniciales(p.nombreEmprendimiento)
       spanIniciales.textContent = iniciales
       spanIniciales.className = `w-full h-full flex items-center justify-center`
       spanIniciales.style.background = 'var(--surface)'
@@ -291,7 +265,7 @@ import Footer from '../components/Footer.astro'
       imgLogo.classList.add('hidden')
     }
 
-    txtNombre.textContent = p.nombre_emprendimiento
+    txtNombre.textContent = p.nombreEmprendimiento
     txtDescripcion.textContent = p.descripcion
 
     spanCategoria.textContent = p.categoria
@@ -301,15 +275,15 @@ import Footer from '../components/Footer.astro'
       ? `📍 ${p.ciudad} • ${p.direccion}`
       : `📍 ${p.ciudad}`
 
-    if (p.sitio_web) {
-      const red = detectarRedSocial(p.sitio_web)
+    if (p.sitioWeb) {
+      const red = detectarRedSocial(p.sitioWeb)
       const iconos: Record<string, string> = {
         instagram: '📷',
         facebook: '👍',
         web: '🌐'
       }
-      linkSitioWeb.href = p.sitio_web
-      linkSitioWeb.textContent = `${iconos[red]} ${p.sitio_web}`
+      linkSitioWeb.href = p.sitioWeb
+      linkSitioWeb.textContent = `${iconos[red]} ${p.sitioWeb}`
       linkSitioWeb.classList.remove('hidden')
     } else {
       linkSitioWeb.classList.add('hidden')
@@ -322,11 +296,9 @@ import Footer from '../components/Footer.astro'
       divHistoria.classList.add('hidden')
     }
 
-    cargarRating(p.id)
-
     linkWhatsapp.href = construirLinkWhatsApp(
       p.whatsapp,
-      p.nombre_emprendimiento
+      p.nombreEmprendimiento
     )
 
     gridCatalogo.innerHTML = ''
@@ -381,7 +353,7 @@ import Footer from '../components/Footer.astro'
 
         <div class="px-5 pb-5">
           <a
-            href="${construirLinkWhatsApp(p.whatsapp, p.nombre_emprendimiento, prod.titulo)}"
+            href="${construirLinkWhatsApp(p.whatsapp, p.nombreEmprendimiento, prod.titulo)}"
             target="_blank"
             rel="noopener noreferrer"
             class="w-full py-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors active:scale-[0.99] cursor-pointer"
@@ -394,67 +366,5 @@ import Footer from '../components/Footer.astro'
 
       gridCatalogo.appendChild(card)
     })
-  }
-
-  async function cargarRating(profileId: string) {
-    const r = await obtenerRating(profileId)
-    if (r.total === 0) {
-      divEstrellas.innerHTML = renderizarEstrellas(0, 0)
-      pRatingInfo.textContent = 'Sé el primero en calificar'
-      pintarEstrellasVotacion(profileId)
-      divRating.classList.remove('hidden')
-      return
-    }
-    divEstrellas.innerHTML = renderizarEstrellas(r.promedio, r.total)
-    pRatingInfo.textContent = `${r.total} calificación${r.total !== 1 ? 'es' : ''}`
-    pintarEstrellasVotacion(profileId)
-    divRating.classList.remove('hidden')
-  }
-
-  function pintarEstrellasVotacion(profileId: string) {
-    const yaVoto = localStorage.getItem(`voto_${profileId}`)
-    if (yaVoto) return
-
-    const fila = document.createElement('div')
-    fila.className = 'flex items-center gap-1 mt-2'
-    fila.style.cssText = 'color: var(--tertiary)'
-    const label = document.createElement('span')
-    label.className = 'text-xs'
-    label.style.cssText = 'color: var(--tertiary)'
-    label.textContent = 'Calificá este perfil:'
-    fila.appendChild(label)
-
-    for (let i = 1; i <= 5; i++) {
-      const estrella = document.createElement('button')
-      estrella.textContent = '★'
-      estrella.className =
-        'text-xl cursor-pointer transition-colors hover:text-amber-400'
-      estrella.style.cssText =
-        'color: var(--tertiary); background: none; border: none; padding: 0 2px'
-      estrella.addEventListener('mouseenter', () => {
-        for (let j = 1; j <= 5; j++) {
-          const btn = fila.querySelector(`[data-rating="${j}"]`) as HTMLElement
-          if (btn) btn.style.color = j <= i ? '#fbbf24' : 'var(--tertiary)'
-        }
-      })
-      estrella.addEventListener('mouseleave', () => {
-        for (let j = 1; j <= 5; j++) {
-          const btn = fila.querySelector(`[data-rating="${j}"]`) as HTMLElement
-          if (btn) btn.style.color = 'var(--tertiary)'
-        }
-      })
-      estrella.setAttribute('data-rating', String(i))
-      estrella.addEventListener('click', async () => {
-        const res = await agregarRating(profileId, i)
-        if (res.success) {
-          localStorage.setItem(`voto_${profileId}`, '1')
-          fila.remove()
-          cargarRating(profileId)
-        }
-      })
-      fila.appendChild(estrella)
-    }
-
-    divEstrellas.parentElement?.appendChild(fila)
   }
 </script>

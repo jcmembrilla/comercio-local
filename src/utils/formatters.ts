@@ -40,7 +40,7 @@ export function construirLinkWhatsApp(
 }
 
 export function formatearPerfilParaCompartir(perfil: PerfilComercio): string {
-  return `${perfil.nombre_emprendimiento} — ${perfil.categoria} en ${perfil.ciudad}`
+  return `${perfil.nombreEmprendimiento} — ${perfil.categoria} en ${perfil.ciudad}`
 }
 
 export function detectarRedSocial(
@@ -51,14 +51,4 @@ export function detectarRedSocial(
   if (lower.includes('facebook.com') || lower.includes('fb.com'))
     return 'facebook'
   return 'web'
-}
-
-export function renderizarEstrellas(promedio: number, total: number): string {
-  const estrellas = Math.round(promedio)
-  let html = ''
-  for (let i = 0; i < 5; i++) {
-    html += `<span class="${i < estrellas ? 'text-amber-400' : ''}" style="${i >= estrellas ? 'color: var(--tertiary)' : ''}">★</span>`
-  }
-  html += ` <span class="text-xs" style="color: var(--tertiary)">${promedio} (${total})</span>`
-  return html
 }

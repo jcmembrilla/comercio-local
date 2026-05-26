@@ -24,12 +24,28 @@ const {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://comercio-local.netlify.app/favicon.svg"
+    />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
     <meta name="twitter:card" content="summary" />
+    <script type="application/ld+json" is:inline>
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Comercio Local",
+        "url": "https://comercio-local.netlify.app",
+        "description": "Cartelera digital para visibilizar emprendedores, productores y trabajadores independientes de tu localidad.",
+        "inLanguage": "es"
+      }
+    </script>
     <title>{title}</title>
     <script>
       ;(function () {
         const t = localStorage.getItem('comercio_local_theme')
-        if (t === 'light') document.documentElement.classList.add('light')
+        if (t !== 'dark') document.documentElement.classList.add('light')
       })()
     </script>
   </head>
@@ -48,4 +64,11 @@ const {
 <script>
   import { initTheme } from '../utils/theme'
   initTheme()
+
+  import { supabase } from '../utils/supabase'
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_OUT') {
+      window.location.reload()
+    }
+  })
 </script>

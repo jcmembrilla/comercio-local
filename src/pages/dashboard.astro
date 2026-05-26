@@ -9,6 +9,9 @@ import { CATEGORIAS } from '../utils/constants'
   <main
     class="max-w-5xl mx-auto px-6 pt-10 pb-16 flex flex-col min-h-screen justify-between"
   >
+    <div class="loading-screen" id="loading-screen">
+      <div class="loading-spinner"></div>
+    </div>
     <div>
       <div
         class="flex items-center justify-between pb-4 mb-8"
@@ -34,7 +37,10 @@ import { CATEGORIAS } from '../utils/constants'
           </a>
           <button
             id="btn-logout"
-            class="text-xs bg-red-950/20 text-red-400 border border-red-950/80 px-4 py-2.5 rounded-xl hover:bg-red-950/40 hover:text-red-300 transition-all flex items-center gap-1.5 cursor-pointer font-bold shrink-0"
+            class="text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer font-bold shrink-0"
+            style="color: #dc2626; background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.25);"
+            onmouseover="this.style.background='rgba(220,38,38,0.2)'"
+            onmouseout="this.style.background='rgba(220,38,38,0.1)'"
           >
             🚪 Salir
           </button>
@@ -46,7 +52,8 @@ import { CATEGORIAS } from '../utils/constants'
         class="hidden text-xs p-4 rounded-2xl mb-6 flex items-start gap-2.5"
         style="background: var(--alert-success-bg); border: 1px solid var(--alert-success-border); color: var(--alert-success-text)"
       >
-        <span class="text-emerald-400 font-bold">✓</span>
+        <span class="font-bold" style="color: var(--alert-success-text)">✓</span
+        >
         <span id="alerta-success-texto">¡Cambios guardados con éxito!</span>
       </div>
       <div
@@ -91,7 +98,7 @@ import { CATEGORIAS } from '../utils/constants'
               <button
                 id="btn-activar-edicion"
                 class="absolute top-3 right-3 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all cursor-pointer"
-                style="background: var(--overlay); color: var(--primary); border: 1px solid var(--border)"
+                style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
               >
                 <svg
                   class="w-3.5 h-3.5"
@@ -177,7 +184,8 @@ import { CATEGORIAS } from '../utils/constants'
               </div>
 
               <p
-                class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-4"
+                class="text-xs font-bold uppercase tracking-wider mb-4"
+                style="color: var(--secondary)"
               >
                 Editando tu perfil
               </p>
@@ -186,14 +194,14 @@ import { CATEGORIAS } from '../utils/constants'
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label
-                      for="nombre_emprendimiento"
+                      for="nombreEmprendimiento"
                       class="block text-xs font-semibold uppercase tracking-wider mb-2"
                       style="color: var(--quaternary)"
                     >
                       Nombre del Emprendimiento
                     </label>
                     <input
-                      id="nombre_emprendimiento"
+                      id="nombreEmprendimiento"
                       type="text"
                       required
                       class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
@@ -257,7 +265,7 @@ import { CATEGORIAS } from '../utils/constants'
                       Logo o Avatar
                     </label>
                     <label
-                      for="foto_logo"
+                      for="fotoLogo"
                       class="group flex items-center justify-center gap-2 w-full h-20 rounded-2xl border-2 border-dashed cursor-pointer transition-all relative overflow-hidden"
                       style="border-color: var(--border-strong); background: var(--surface)"
                     >
@@ -293,7 +301,7 @@ import { CATEGORIAS } from '../utils/constants'
                       </div>
                     </label>
                     <input
-                      id="foto_logo"
+                      id="fotoLogo"
                       type="file"
                       accept="image/*"
                       class="hidden"
@@ -307,7 +315,7 @@ import { CATEGORIAS } from '../utils/constants'
                       Portada / Banner
                     </label>
                     <label
-                      for="foto_portada"
+                      for="fotoPortada"
                       class="group flex items-center justify-center gap-2 w-full h-20 rounded-2xl border-2 border-dashed cursor-pointer transition-all relative overflow-hidden"
                       style="border-color: var(--border-strong); background: var(--surface)"
                     >
@@ -343,7 +351,7 @@ import { CATEGORIAS } from '../utils/constants'
                       </div>
                     </label>
                     <input
-                      id="foto_portada"
+                      id="fotoPortada"
                       type="file"
                       accept="image/*"
                       class="hidden"
@@ -410,14 +418,14 @@ import { CATEGORIAS } from '../utils/constants'
                   </div>
                   <div>
                     <label
-                      for="sitio_web"
+                      for="sitioWeb"
                       class="block text-xs font-semibold uppercase tracking-wider mb-2"
                       style="color: var(--quaternary)"
                     >
                       Sitio Web / Red Social
                     </label>
                     <input
-                      id="sitio_web"
+                      id="sitioWeb"
                       type="url"
                       placeholder="Ej: https://instagram.com/tu_cuenta"
                       class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
@@ -474,11 +482,14 @@ import { CATEGORIAS } from '../utils/constants'
 
         <!-- BLOQUE 2: PANEL DE PUBLICACIONES -->
         <div
-          class="p-6 rounded-3xl backdrop-blur-md"
-          style="background: var(--elevated-60); border: 1px solid var(--border-strongest)"
+          id="panel-publicaciones"
+          class="p-6 rounded-3xl"
+          style="background: var(--elevated); border: 1px solid var(--border-strongest)"
         >
           <h2
-            class="text-base font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-2.5"
+            id="panel-publicaciones-titulo"
+            class="text-base font-bold uppercase tracking-wider mb-1 flex items-center gap-2.5"
+            style="color: var(--secondary)"
           >
             <svg
               class="w-5 h-5 shrink-0"
@@ -506,7 +517,8 @@ import { CATEGORIAS } from '../utils/constants'
 
           <div
             id="hint-foto-opcional"
-            class="hidden mb-4 bg-indigo-950/30 border border-indigo-500/20 text-indigo-300 text-xs p-3 rounded-xl flex items-start gap-2"
+            class="hidden mb-4 text-xs p-3 rounded-xl flex items-start gap-2"
+            style="color: var(--secondary); background: var(--surface); border: 1px solid var(--border-strong)"
           >
             <svg
               class="w-4 h-4 shrink-0 mt-0.5"
@@ -532,7 +544,7 @@ import { CATEGORIAS } from '../utils/constants'
             data-mode="add"
             data-editing-id=""
             class="space-y-4 p-4 rounded-2xl mb-6"
-            style="background: var(--overlay); border: 1px solid var(--border)"
+            style="background: var(--surface); border: 1px solid var(--border)"
           >
             <div class="flex justify-between items-center">
               <p
@@ -566,10 +578,11 @@ import { CATEGORIAS } from '../utils/constants'
                   type="text"
                   required
                   placeholder="Ej: Docena de empanadas o Instalación eléctrica"
-                  class="w-full px-3 py-2.5 rounded-xl text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                  class="w-full px-3 py-2.5 rounded-xl text-xs focus:outline-none transition-colors"
                   style="background: var(--button); color: var(--primary); border: 1px solid var(--border-strong)"
                 />
               </div>
+
               <div>
                 <label
                   for="prod-precio"
@@ -582,7 +595,7 @@ import { CATEGORIAS } from '../utils/constants'
                   id="prod-precio"
                   type="number"
                   placeholder="Ej: 4500 (Dejar vacío para omitir)"
-                  class="w-full px-3 py-2.5 rounded-xl text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                  class="w-full px-3 py-2.5 rounded-xl text-xs focus:outline-none transition-colors"
                   style="background: var(--button); color: var(--primary); border: 1px solid var(--border-strong)"
                 />
               </div>
@@ -598,18 +611,18 @@ import { CATEGORIAS } from '../utils/constants'
                   Foto del trabajo
                 </label>
                 <label
-                  for="prod-foto-file"
+                  for="prodFotoFile"
                   class="group flex items-center justify-center gap-2 w-full h-24 rounded-xl border-2 border-dashed cursor-pointer transition-all relative overflow-hidden"
                   style="border-color: var(--border-strong); background: var(--button)"
                 >
                   <img
-                    id="preview-prod-foto"
+                    id="previewProdFoto"
                     src=""
                     alt=""
                     class="hidden w-full h-full object-cover absolute inset-0 rounded-xl"
                   />
                   <div
-                    id="placeholder-prod-foto"
+                    id="placeholderProdFoto"
                     class="flex flex-col items-center gap-1 pointer-events-none"
                   >
                     <svg
@@ -627,14 +640,14 @@ import { CATEGORIAS } from '../utils/constants'
                       ></path>
                     </svg>
                     <span
-                      id="prod-foto-hint"
+                      id="prodFotoHint"
                       class="text-[9px] transition-colors"
                       style="color: var(--tertiary)">Subir foto · Máx 2MB</span
                     >
                   </div>
                 </label>
                 <input
-                  id="prod-foto-file"
+                  id="prodFotoFile"
                   type="file"
                   accept="image/*"
                   class="hidden"
@@ -662,7 +675,7 @@ import { CATEGORIAS } from '../utils/constants'
                   maxlength="120"
                   rows="4"
                   placeholder="Describí qué incluye este trabajo o servicio..."
-                  class="w-full px-3 py-2.5 rounded-xl text-xs focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                  class="w-full px-3 py-2.5 rounded-xl text-xs focus:outline-none transition-colors resize-none"
                   style="background: var(--button); color: var(--primary); border: 1px solid var(--border-strong)"
                 ></textarea>
               </div>
@@ -740,7 +753,11 @@ import { CATEGORIAS } from '../utils/constants'
   import { calcularIniciales, escapeHtml } from '../utils/formatters'
 
   let sesion = await obtenerSesionActiva()
-  if (!sesion) window.location.href = '/login'
+  if (!sesion) {
+    window.location.href = '/login'
+  } else {
+    document.getElementById('loading-screen')?.classList.add('hidden')
+  }
 
   let categoriaColor = '82, 82, 91'
 
@@ -787,7 +804,7 @@ import { CATEGORIAS } from '../utils/constants'
   const vistaDesc = document.getElementById('vista-descripcion') as HTMLElement
   const formPerfil = document.getElementById('form-perfil') as HTMLFormElement
   const inputNombre = document.getElementById(
-    'nombre_emprendimiento'
+    'nombreEmprendimiento'
   ) as HTMLInputElement
   const selectCategoria = document.getElementById(
     'categoria'
@@ -800,7 +817,7 @@ import { CATEGORIAS } from '../utils/constants'
   const inputDireccion = document.getElementById(
     'direccion'
   ) as HTMLInputElement
-  const inputSitioWeb = document.getElementById('sitio_web') as HTMLInputElement
+  const inputSitioWeb = document.getElementById('sitioWeb') as HTMLInputElement
   const textareaHistoria = document.getElementById(
     'historia'
   ) as HTMLTextAreaElement
@@ -808,9 +825,9 @@ import { CATEGORIAS } from '../utils/constants'
   const charCounterHistoria = document.getElementById(
     'char-counter-historia'
   ) as HTMLSpanElement
-  const inputLogo = document.getElementById('foto_logo') as HTMLInputElement
+  const inputLogo = document.getElementById('fotoLogo') as HTMLInputElement
   const inputPortada = document.getElementById(
-    'foto_portada'
+    'fotoPortada'
   ) as HTMLInputElement
   const previewLogoInput = document.getElementById(
     'preview-logo-input'
@@ -858,16 +875,16 @@ import { CATEGORIAS } from '../utils/constants'
     'label-prod-foto'
   ) as HTMLLabelElement
   const prodFotoHint = document.getElementById(
-    'prod-foto-hint'
+    'prodFotoHint'
   ) as HTMLSpanElement
   const previewProdFoto = document.getElementById(
-    'preview-prod-foto'
+    'previewProdFoto'
   ) as HTMLImageElement
   const placeholderProdFoto = document.getElementById(
-    'placeholder-prod-foto'
+    'placeholderProdFoto'
   ) as HTMLDivElement
   const inputProdFotoFile = document.getElementById(
-    'prod-foto-file'
+    'prodFotoFile'
   ) as HTMLInputElement
   const contenedorCatalogo = document.getElementById(
     'contenedor-preview-catalogo'
@@ -883,13 +900,13 @@ import { CATEGORIAS } from '../utils/constants'
 
   if (sesion) {
     subBienvenida.textContent = `Gestionando el perfil de ${sesion.email}`
-    inputNombre.value = sesion.nombre_emprendimiento
+    inputNombre.value = sesion.nombreEmprendimiento
     selectCategoria.value = sesion.categoria
     textareaDesc.value = sesion.descripcion
     inputWhatsapp.value = sesion.whatsapp
     inputCiudad.value = sesion.ciudad
     inputDireccion.value = sesion.direccion || ''
-    inputSitioWeb.value = sesion.sitio_web || ''
+    inputSitioWeb.value = sesion.sitioWeb || ''
     textareaHistoria.value = sesion.historia || ''
     charCounterHistoria.textContent = `${(sesion.historia || '').length} / 500`
     charCounter.textContent = `${sesion.descripcion.length} / 150`
@@ -907,12 +924,61 @@ import { CATEGORIAS } from '../utils/constants'
       RESPALDOS_POR_RUBRO[sesion.categoria] || RESPALDOS_POR_RUBRO.otros
     const colores =
       COLORES_CATEGORIAS[sesion.categoria] || COLORES_CATEGORIAS.otros
-    const iniciales = calcularIniciales(sesion.nombre_emprendimiento)
+    const iniciales = calcularIniciales(sesion.nombreEmprendimiento)
 
     categoriaColor = colores.rgb
     const hero = document.getElementById('dashboard-hero') as HTMLDivElement
     if (hero)
-      hero.style.cssText = `background: rgba(${colores.rgb}, 0.22); border: 2px solid var(--border)`
+      hero.style.cssText = `background: rgba(${colores.rgb}, 0.30); border: 2px solid var(--border)`
+
+    const panel = document.getElementById('panel-publicaciones')
+    const panelTitulo = document.getElementById('panel-publicaciones-titulo')
+    if (panel) {
+      panel.style.background = `linear-gradient(135deg, rgba(${colores.rgb}, 0.07) 0%, var(--elevated) 50%)`
+      panel.style.borderLeft = `3px solid rgb(${colores.rgb})`
+    }
+    if (panelTitulo) {
+      panelTitulo.style.color = `rgb(${colores.rgb})`
+    }
+
+    const formProducto = document.getElementById('form-producto')
+    if (formProducto) {
+      formProducto.style.border = `1px solid rgba(${colores.rgb}, 0.25)`
+    }
+    const formProductoTit = document.getElementById('form-producto-titulo')
+    if (formProductoTit) {
+      formProductoTit.style.color = `rgb(${colores.rgb})`
+    }
+    formProducto?.querySelectorAll('label').forEach((lb) => {
+      lb.style.color = `rgba(${colores.rgb}, 0.7)`
+    })
+    const dropzone = document.querySelector(
+      'label[for="prodFotoFile"]'
+    ) as HTMLElement
+    if (dropzone) {
+      dropzone.style.borderColor = `rgba(${colores.rgb}, 0.3)`
+    }
+    formProducto?.querySelectorAll('input, textarea').forEach((el: Element) => {
+      const input = el as HTMLElement
+      input.addEventListener('focus', () => {
+        input.style.borderColor = `rgb(${colores.rgb})`
+      })
+      input.addEventListener('blur', () => {
+        input.style.borderColor = ''
+      })
+    })
+
+    const hint = document.getElementById('hint-foto-opcional')
+    if (hint) {
+      hint.style.background = `rgba(${colores.rgb}, 0.04)`
+      hint.style.border = `1px solid rgba(${colores.rgb}, 0.2)`
+    }
+
+    const tusPublicacionesLabel = document.querySelector('#lista-productos')
+      ?.previousElementSibling as HTMLElement | null
+    if (tusPublicacionesLabel) {
+      tusPublicacionesLabel.style.color = `rgb(${colores.rgb})`
+    }
 
     previewPortadaCard.src = sesion.fotoPortada || respaldos.portada
 
@@ -925,7 +991,7 @@ import { CATEGORIAS } from '../utils/constants'
       inicialesCard.textContent = iniciales
     }
 
-    vistaNombre.textContent = sesion.nombre_emprendimiento
+    vistaNombre.textContent = sesion.nombreEmprendimiento
     vistaCategoria.textContent = sesion.categoria.toUpperCase()
     vistaCategoria.className = `text-xs font-semibold uppercase tracking-wider ${colores.text}`
     const dirText = sesion.direccion ? ` • ${sesion.direccion}` : ''
@@ -1004,13 +1070,13 @@ import { CATEGORIAS } from '../utils/constants'
     e.preventDefault()
     if (!sesion) return
     const res = await actualizarPerfil(sesion.id, {
-      nombre_emprendimiento: inputNombre.value.trim(),
+      nombreEmprendimiento: inputNombre.value.trim(),
       categoria: selectCategoria.value as CategoriaRubro,
       descripcion: textareaDesc.value.trim(),
       whatsapp: inputWhatsapp.value.trim().replace(/[^\d]/g, ''),
       ciudad: inputCiudad.value.trim(),
       direccion: inputDireccion.value.trim(),
-      sitio_web: inputSitioWeb.value.trim(),
+      sitioWeb: inputSitioWeb.value.trim(),
       historia: textareaHistoria.value.trim(),
       fotoLogo: base64Logo,
       fotoPortada: base64Portada
@@ -1171,9 +1237,8 @@ import { CATEGORIAS } from '../utils/constants'
     sesion.productos.forEach((prod) => {
       const item = document.createElement('div')
       item.className =
-        'flex items-center justify-between gap-4 p-3.5 rounded-2xl text-xs backdrop-blur-sm transition-all'
-      item.style.cssText =
-        'background: var(--overlay); border: 1px solid var(--border-strongest)'
+        'flex items-center justify-between gap-4 p-3.5 rounded-2xl text-xs transition-all'
+      item.style.cssText = `background: var(--surface); border: 1px solid var(--border-strong); border-left: 3px solid rgba(${categoriaColor}, 0.35)`
       const titulo = escapeHtml(prod.titulo)
       const desc = escapeHtml(prod.descripcion)
       const precio = prod.precio
@@ -1184,7 +1249,7 @@ import { CATEGORIAS } from '../utils/constants'
       const fotoUrl = fotoValida ? escapeHtml(prod.foto!) : ''
       const priceText =
         precio != null
-          ? `<span class="bg-emerald-950/40 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-lg font-bold shrink-0">$${precio}</span>`
+          ? `<span class="font-bold text-xs px-2 py-0.5 rounded-lg shrink-0" style="color: rgb(${categoriaColor}); background: rgba(${categoriaColor},0.1); border: 1px solid rgba(${categoriaColor},0.25)">$${precio}</span>`
           : ''
       const imgHtml = fotoUrl
         ? `<img src="${fotoUrl}" alt="${titulo}" loading="lazy" class="w-12 h-12 object-cover rounded-xl shrink-0" style="border: 1px solid var(--border)" />`
@@ -1199,8 +1264,8 @@ import { CATEGORIAS } from '../utils/constants'
           </div>
         </div>
         <div class="flex gap-2 shrink-0">
-          <button data-prod-id="${prodId}" class="btn-editar text-[10px] bg-emerald-950/20 text-emerald-400 border border-emerald-900/60 px-2.5 py-1.5 rounded-lg hover:bg-emerald-950/40 transition-colors font-semibold cursor-pointer">Editar</button>
-          <button data-prod-id="${prodId}" class="btn-eliminar text-[10px] bg-red-950/20 text-red-400 border border-red-950/80 px-2.5 py-1.5 rounded-lg hover:bg-red-950/40 transition-colors font-semibold cursor-pointer">Borrar</button>
+          <button data-prod-id="${prodId}" class="btn-editar text-[10px] px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer transition-colors" style="color: rgb(${categoriaColor}); background: rgba(${categoriaColor},0.08); border: 1px solid rgba(${categoriaColor},0.2)">Editar</button>
+          <button data-prod-id="${prodId}" class="btn-eliminar text-[10px] px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer transition-colors" style="color: #dc2626; background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.2)">Borrar</button>
         </div>`
       listaProductos.appendChild(item)
     })
@@ -1283,7 +1348,7 @@ import { CATEGORIAS } from '../utils/constants'
       const fotoUrl = fotoValida ? escapeHtml(prod.foto!) : ''
       const priceTag =
         precio != null
-          ? `<span class="text-emerald-400 font-bold text-xs bg-emerald-950/40 px-2 py-0.5 rounded-lg border border-emerald-500/20 shrink-0">$${precio}</span>`
+          ? `<span class="font-bold text-xs px-2 py-0.5 rounded-lg shrink-0" style="color: rgb(${categoriaColor}); background: rgba(${categoriaColor},0.1); border: 1px solid rgba(${categoriaColor},0.25)">$${precio}</span>`
           : ''
       const imgHtml = fotoUrl
         ? `<div class="w-full h-32 overflow-hidden"><img src="${fotoUrl}" alt="${titulo}" loading="lazy" class="w-full h-full object-cover" /></div>`

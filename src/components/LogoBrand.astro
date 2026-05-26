@@ -4,9 +4,14 @@
 
 <a href="/" class="flex items-center gap-1 group">
   <span class="text-xl">🌱</span>
-  <span
-    class="font-bold transition-colors"
-    style="color: var(--primary)"
-    class:list={{ 'group-hover:text-emerald-400': true }}>Comercio Local</span
-  >
+  <span class="brand-text font-bold transition-colors">Comercio Local</span>
 </a>
+
+<style>
+  .brand-text {
+    color: var(--primary);
+  }
+  .group:hover .brand-text {
+    color: #34d399;
+  }
+</style>

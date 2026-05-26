@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro'
 import BackButton from '../components/BackButton.astro'
 import Footer from '../components/Footer.astro'
 import Alert from '../components/Alert.astro'
-import SocialButtons from '../components/SocialButtons.astro'
 import FileUploader from '../components/FileUploader.astro'
 import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
 ---
@@ -12,6 +11,9 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
   <main
     class="max-w-xl mx-auto px-6 pt-10 pb-12 flex flex-col min-h-screen justify-between"
   >
+    <div class="loading-screen" id="loading-screen">
+      <div class="loading-spinner"></div>
+    </div>
     <div class="w-full">
       <div
         class="flex items-center justify-between pb-4 mb-6"
@@ -35,8 +37,6 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
         class="p-6 rounded-3xl border backdrop-blur-md"
         style="background: var(--elevated-60); border-color: var(--border-strongest)"
       >
-        <SocialButtons mode="register" />
-
         <Alert type="error" id="alerta-registro" />
 
         <form id="form-registro" class="space-y-6">
@@ -51,14 +51,14 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
-                  for="nombre_emprendimiento"
+                  for="nombreEmprendimiento"
                   class="block text-xs font-semibold uppercase tracking-wider mb-2"
                   style="color: var(--tertiary)"
                 >
                   Nombre del Emprendimiento
                 </label>
                 <input
-                  id="nombre_emprendimiento"
+                  id="nombreEmprendimiento"
                   type="text"
                   required
                   placeholder="Ej: Carlos Albornoz o La Cocina de Mabel"
@@ -177,14 +177,14 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
 
             <div id="otra-ciudad-container" class="hidden">
               <label
-                for="otra_ciudad"
+                for="otraCiudad"
                 class="block text-xs font-semibold uppercase tracking-wider mb-2"
                 style="color: var(--tertiary)"
               >
                 Nombre de tu Localidad
               </label>
               <input
-                id="otra_ciudad"
+                id="otraCiudad"
                 type="text"
                 placeholder="Ingresa tu ciudad o localidad"
                 class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
@@ -244,6 +244,24 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
 
               <div>
                 <label
+                  for="email-confirmar"
+                  class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                  style="color: var(--tertiary)"
+                >
+                  Confirmar Correo Electrónico
+                </label>
+                <input
+                  id="email-confirmar"
+                  type="email"
+                  required
+                  placeholder="Repetí tu correo"
+                  class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                  style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
+                />
+              </div>
+
+              <div>
+                <label
                   for="password"
                   class="block text-xs font-semibold uppercase tracking-wider mb-2"
                   style="color: var(--tertiary)"
@@ -254,7 +272,7 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
                   id="password"
                   type="password"
                   required
-                  placeholder="Mín. 6 caracteres (letras y números)"
+                  placeholder="Mín. 8 caracteres (letras y números)"
                   class="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-emerald-500 transition-colors"
                   style="background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)"
                 />
@@ -294,15 +312,20 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
 <script>
   import { registrarUsuario, obtenerSesionActiva } from '../utils/storage'
   import type { CategoriaRubro } from '../utils/constants'
+  import { DOMINIOS_DESCARTABLES } from '../utils/constants'
   import { leerArchivoBase64 } from '../utils/images'
   import { mostrarError as mostrarErrorUI } from '../utils/ui'
 
   const sesion = await obtenerSesionActiva()
-  if (sesion) window.location.href = '/dashboard'
+  if (sesion) {
+    window.location.href = '/dashboard'
+  } else {
+    document.getElementById('loading-screen')?.classList.add('hidden')
+  }
 
   const form = document.getElementById('form-registro') as HTMLFormElement
   const nombreInput = document.getElementById(
-    'nombre_emprendimiento'
+    'nombreEmprendimiento'
   ) as HTMLInputElement
   const categoriaSelect = document.getElementById(
     'categoria'
@@ -316,7 +339,7 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
     'otra-ciudad-container'
   ) as HTMLDivElement
   const otraCiudadInput = document.getElementById(
-    'otra_ciudad'
+    'otraCiudad'
   ) as HTMLInputElement
   const emailInput = document.getElementById('email') as HTMLInputElement
   const passwordInput = document.getElementById('password') as HTMLInputElement
@@ -328,21 +351,19 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
     'alerta-registro-texto'
   ) as HTMLSpanElement
 
-  const inputLogo = document.getElementById('foto_logo') as HTMLInputElement
+  const inputLogo = document.getElementById('fotoLogo') as HTMLInputElement
   const inputPortada = document.getElementById(
-    'foto_portada'
+    'fotoPortada'
   ) as HTMLInputElement
-  const previewLogo = document.getElementById(
-    'preview-logo'
-  ) as HTMLImageElement
+  const previewLogo = document.getElementById('previewLogo') as HTMLImageElement
   const previewPortada = document.getElementById(
-    'preview-portada'
+    'previewPortada'
   ) as HTMLImageElement
   const placeholderLogo = document.getElementById(
-    'placeholder-logo'
+    'placeholderLogo'
   ) as HTMLDivElement
   const placeholderPortada = document.getElementById(
-    'placeholder-portada'
+    'placeholderPortada'
   ) as HTMLDivElement
 
   let base64Logo = ''
@@ -427,6 +448,32 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
 
     const email = emailInput.value.trim()
     const password = passwordInput.value
+    const emailConfirmarInput = document.getElementById(
+      'email-confirmar'
+    ) as HTMLInputElement
+    const emailConfirmar = emailConfirmarInput.value.trim()
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+    if (!emailRegex.test(email)) {
+      mostrarError('El formato del correo electrónico no es válido.')
+      emailInput.focus()
+      return
+    }
+
+    if (email !== emailConfirmar) {
+      mostrarError('Los correos electrónicos no coinciden.')
+      emailConfirmarInput.focus()
+      return
+    }
+
+    const dominio = email.split('@')[1]?.toLowerCase()
+    if (dominio && DOMINIOS_DESCARTABLES.includes(dominio)) {
+      mostrarError(
+        'No se permiten correos temporales o desechables. Usá un correo real.'
+      )
+      emailInput.focus()
+      return
+    }
 
     if (whatsapp.length < 8) {
       mostrarError(
@@ -437,9 +484,9 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
 
     const tieneLetra = /[a-zA-Z]/.test(password)
     const tieneNumero = /\d/.test(password)
-    if (password.length < 6 || !tieneLetra || !tieneNumero) {
+    if (password.length < 8 || !tieneLetra || !tieneNumero) {
       mostrarError(
-        'La contraseña debe tener al menos 6 caracteres e incluir como mínimo una letra y un número.'
+        'La contraseña debe tener al menos 8 caracteres e incluir como mínimo una letra y un número.'
       )
       passwordInput.focus()
       return
@@ -450,12 +497,14 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
     ) as HTMLInputElement
 
     const res = await registrarUsuario(email, password, {
-      nombre_emprendimiento: nombre,
+      nombreEmprendimiento: nombre,
       categoria,
       descripcion,
       whatsapp,
       ciudad,
       direccion: direccionInput.value.trim(),
+      sitioWeb: '',
+      historia: '',
       fotoLogo: base64Logo,
       fotoPortada: base64Portada
     })
