@@ -174,10 +174,6 @@ export async function registrarUsuario(
     }
   }
 
-  if (authData.session) {
-    await supabase.auth.setSession(authData.session)
-  }
-
   const userId = authData.user.id
   let fotoLogo: string
   let fotoPortada: string
@@ -192,9 +188,9 @@ export async function registrarUsuario(
     }
   }
 
-  const { error: insertError } = await supabase.from('profiles').insert({
-    id: userId,
-    email: emailNorm,
+  const { error: rpcError } = await supabase.rpc('crear_perfil_registro', {
+    user_id: userId,
+    user_email: emailNorm,
     nombre_emprendimiento: datos.nombreEmprendimiento,
     categoria,
     descripcion: datos.descripcion || '',
@@ -207,8 +203,8 @@ export async function registrarUsuario(
     foto_portada: fotoPortada
   })
 
-  if (insertError) {
-    return { success: false, message: traducirError(insertError) }
+  if (rpcError) {
+    return { success: false, message: traducirError(rpcError) }
   }
 
   return { success: true, message: 'Registro exitoso' }

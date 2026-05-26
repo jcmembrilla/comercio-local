@@ -63,3 +63,36 @@ CREATE POLICY "Usuarios pueden borrar sus productos" ON products FOR DELETE USIN
 
 -- 1. Eliminar la columna password (ya no se usa, auth lo maneja Supabase):
 -- ALTER TABLE profiles DROP COLUMN IF EXISTS password;
+
+-- ==========================================
+-- FUNCIÓN RPC para registrar perfil (bypassea RLS vía SECURITY DEFINER)
+-- ==========================================
+
+CREATE OR REPLACE FUNCTION crear_perfil_registro(
+  user_id UUID,
+  user_email TEXT,
+  nombre_emprendimiento TEXT,
+  categoria TEXT,
+  descripcion TEXT DEFAULT '',
+  whatsapp TEXT DEFAULT '',
+  ciudad TEXT DEFAULT '',
+  direccion TEXT DEFAULT '',
+  sitio_web TEXT DEFAULT '',
+  historia TEXT DEFAULT '',
+  foto_logo TEXT DEFAULT '',
+  foto_portada TEXT DEFAULT ''
+) RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  INSERT INTO profiles (
+    id, email, nombre_emprendimiento, categoria, descripcion,
+    whatsapp, ciudad, direccion, sitio_web, historia, foto_logo, foto_portada
+  ) VALUES (
+    user_id, user_email, crear_perfil_registro.nombre_emprendimiento,
+    categoria, descripcion, whatsapp, ciudad, direccion,
+    sitio_web, historia, foto_logo, foto_portada
+  );
+END;
+$$;
