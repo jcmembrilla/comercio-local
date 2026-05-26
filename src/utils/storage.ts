@@ -18,6 +18,27 @@ function validarCategoriaRubro(value: unknown): CategoriaRubro | null {
   return isCategoriaRubro(value) ? value : null
 }
 
+function traducirError(error: { message?: string } | null): string {
+  if (!error?.message) return 'Ocurrió un error inesperado.'
+  const msg = error.message
+  if (msg.includes('Bucket not found'))
+    return 'El bucket de almacenamiento no está configurado. Verificá Supabase Storage.'
+  if (msg.includes('Invalid login credentials'))
+    return 'Correo electrónico o contraseña incorrectos.'
+  if (msg.includes('duplicate key value'))
+    return 'Este correo electrónico ya está registrado.'
+  if (msg.includes('Email not confirmed'))
+    return 'El correo electrónico no está confirmado.'
+  if (msg.includes('Email rate limit exceeded'))
+    return 'Demasiados intentos. Esperá unos minutos y volvé a intentar.'
+  if (msg.includes('new row violates row-level security policy'))
+    return 'No tenés permisos para realizar esta acción.'
+  if (msg.includes('JWT')) return 'La sesión expiró. Iniciá sesión nuevamente.'
+  if (msg.includes('does not exist') || msg.includes('not found'))
+    return 'El recurso solicitado no existe.'
+  return msg
+}
+
 // ─── Mappers ────────────────────────────────────────
 
 function mapRowToPerfil(row: ProfileRow): PerfilComercio {
@@ -149,8 +170,12 @@ export async function registrarUsuario(
   if (authError || !authData.user) {
     return {
       success: false,
-      message: authError?.message || 'Error al registrar'
+      message: traducirError(authError)
     }
+  }
+
+  if (authData.session) {
+    await supabase.auth.setSession(authData.session)
   }
 
   const userId = authData.user.id
@@ -162,7 +187,8 @@ export async function registrarUsuario(
   } catch (e: unknown) {
     return {
       success: false,
-      message: e instanceof Error ? e.message : 'Error al subir las imágenes.'
+      message:
+        e instanceof Error ? traducirError(e) : 'Error al subir las imágenes.'
     }
   }
 
@@ -182,7 +208,7 @@ export async function registrarUsuario(
   })
 
   if (insertError) {
-    return { success: false, message: insertError.message }
+    return { success: false, message: traducirError(insertError) }
   }
 
   return { success: true, message: 'Registro exitoso' }
@@ -198,11 +224,7 @@ export async function autenticarUsuario(
   })
 
   if (error) {
-    const msg =
-      error.message === 'Invalid login credentials'
-        ? 'Correo o contraseña incorrectos.'
-        : error.message
-    return { success: false, message: msg }
+    return { success: false, message: traducirError(error) }
   }
 
   const { data: perfil, error: perfilError } = await supabase
@@ -261,7 +283,8 @@ export async function actualizarPerfil(
   } catch (e: unknown) {
     return {
       success: false,
-      message: e instanceof Error ? e.message : 'Error al subir las imágenes.'
+      message:
+        e instanceof Error ? traducirError(e) : 'Error al subir las imágenes.'
     }
   }
 
@@ -282,7 +305,7 @@ export async function actualizarPerfil(
     .eq('id', id)
 
   if (error) {
-    return { success: false, message: error.message }
+    return { success: false, message: traducirError(error) }
   }
   return { success: true, message: 'Perfil actualizado correctamente.' }
 }
@@ -360,7 +383,8 @@ export async function agregarProducto(
     } catch (e: unknown) {
       return {
         success: false,
-        message: e instanceof Error ? e.message : 'Error al subir la imagen.'
+        message:
+          e instanceof Error ? traducirError(e) : 'Error al subir la imagen.'
       }
     }
   }
@@ -381,7 +405,7 @@ export async function agregarProducto(
   if (error || !data) {
     return {
       success: false,
-      message: error?.message || 'Error al guardar la publicación'
+      message: traducirError(error) || 'Error al guardar la publicación'
     }
   }
 
@@ -464,7 +488,8 @@ export async function editarProducto(
     } catch (e: unknown) {
       return {
         success: false,
-        message: e instanceof Error ? e.message : 'Error al subir la imagen.'
+        message:
+          e instanceof Error ? traducirError(e) : 'Error al subir la imagen.'
       }
     }
   }
@@ -481,7 +506,7 @@ export async function editarProducto(
     .eq('profile_id', usuarioId)
 
   if (error) {
-    return { success: false, message: error.message }
+    return { success: false, message: traducirError(error) }
   }
   return { success: true, message: '¡Publicación actualizada con éxito!' }
 }
@@ -497,7 +522,7 @@ export async function eliminarProducto(
     .eq('profile_id', usuarioId)
 
   if (error) {
-    return { success: false, message: error.message }
+    return { success: false, message: traducirError(error) }
   }
   return {
     success: true,
