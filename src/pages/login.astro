@@ -94,7 +94,10 @@ import Alert from '../components/Alert.astro'
 </Layout>
 
 <script>
-  import { autenticarUsuario, obtenerSesionActiva } from '../utils/storage'
+  import {
+    autenticarUsuario,
+    obtenerSesionActiva
+  } from '../services/auth.service'
   import { mostrarError } from '../utils/ui'
 
   const sesion = await obtenerSesionActiva()

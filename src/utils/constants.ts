@@ -1,5 +1,5 @@
 export interface Producto {
-  id: string | number
+  id: string
   titulo: string
   precio?: number
   foto?: string // Imagen en base64 o URL. Obligatoria según el rubro.
@@ -8,6 +8,7 @@ export interface Producto {
 
 export interface PerfilComercio {
   id: string
+  slug?: string
   email: string
   nombreEmprendimiento: string
   categoria:

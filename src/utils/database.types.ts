@@ -2,6 +2,7 @@ export interface ProfileRow {
   id: string
   email?: string
   nombre_emprendimiento: string
+  slug?: string
   categoria: string
   descripcion: string
   whatsapp: string

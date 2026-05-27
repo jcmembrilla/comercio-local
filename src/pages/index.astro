@@ -106,11 +106,11 @@ import { CATEGORIAS } from '../utils/constants'
 <script>
   import {
     obtenerPublicaciones,
-    obtenerSesionActiva,
-    obtenerUltimaCiudad,
-    guardarUltimaCiudad,
     obtenerCiudadesActivas,
-  } from '../utils/storage'
+    obtenerUltimaCiudad,
+    guardarUltimaCiudad
+  } from '../services/profile.service'
+  import { obtenerSesionActiva } from '../services/auth.service'
   import { detectarLocalidad } from '../utils/geolocation'
   import { COLORES_CATEGORIAS, RESPALDOS_POR_RUBRO, CIUDADES_PREDEFINIDAS } from '../utils/constants'
   import type { CategoriaRubro } from '../utils/constants'
@@ -146,6 +146,14 @@ import { CATEGORIAS } from '../utils/constants'
     obtenerCiudadesActivas(),
     obtenerSesionActiva()
   ])
+
+  // DEBUG: mostrar datos iniciales en consola del navegador
+  try {
+    console.info('DEBUG publicaciones count:', publicaciones?.length)
+    console.info('DEBUG ciudadesActivas:', ciudadesActivas)
+  } catch (e) {
+    // no-op
+  }
 
   if (sesion && btnAuth) {
     btnAuth.href = '/dashboard'
@@ -223,10 +231,10 @@ import { CATEGORIAS } from '../utils/constants'
       const respaldos =
         RESPALDOS_POR_RUBRO[pub.categoria] || RESPALDOS_POR_RUBRO.otros
 
-      const portadaValida = pub.fotoPortada && (pub.fotoPortada.startsWith('https://') || pub.fotoPortada.startsWith('data:image/'))
-      const urlPortada = portadaValida ? escapeHtml(pub.fotoPortada!) : respaldos.portada
-      const logoValido = pub.fotoLogo && (pub.fotoLogo.startsWith('https://') || pub.fotoLogo.startsWith('data:image/'))
-      const urlLogo = logoValido ? escapeHtml(pub.fotoLogo!) : ''
+      const portadaValida = typeof pub.fotoPortada === 'string' && (pub.fotoPortada.startsWith('https://') || pub.fotoPortada.startsWith('data:image/'))
+      const urlPortada = portadaValida ? escapeHtml(pub.fotoPortada as string) : respaldos.portada
+      const logoValido = typeof pub.fotoLogo === 'string' && (pub.fotoLogo.startsWith('https://') || pub.fotoLogo.startsWith('data:image/'))
+      const urlLogo = logoValido ? escapeHtml(pub.fotoLogo as string) : ''
 
       const htmlAvatar = urlLogo
         ? `<img src="${urlLogo}" alt="${nombre}" loading="lazy" class="w-full h-full object-cover shrink-0" />`
@@ -265,7 +273,7 @@ import { CATEGORIAS } from '../utils/constants'
           </p>
         </div>
         <a
-          href="/perfil?id=${pub.id}"
+          href="/perfil/${pub.slug}"
           class="w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors mb-2 cursor-pointer"
           style="background: var(--button); border: 1px solid var(--border-stronger); color: var(--primary)"
         >
