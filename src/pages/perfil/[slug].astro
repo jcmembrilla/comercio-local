@@ -1,8 +1,8 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import LogoBrand from '../components/LogoBrand.astro'
-import BackButton from '../components/BackButton.astro'
-import Footer from '../components/Footer.astro'
+import Layout from '../../layouts/Layout.astro'
+import LogoBrand from '../../components/LogoBrand.astro'
+import BackButton from '../../components/BackButton.astro'
+import Footer from '../../components/Footer.astro'
 ---
 
 <Layout title="Comercio Local - Perfil Comercial">
@@ -167,15 +167,18 @@ import Footer from '../components/Footer.astro'
 </Layout>
 
 <script>
-  import { obtenerPerfilPorId } from '../utils/storage'
-  import { COLORES_CATEGORIAS, RESPALDOS_POR_RUBRO } from '../utils/constants'
-  import type { PerfilComercio, Producto } from '../utils/constants'
+  import { obtenerPerfilPorSlug } from '../../services/profile.service'
+  import {
+    COLORES_CATEGORIAS,
+    RESPALDOS_POR_RUBRO
+  } from '../../utils/constants'
+  import type { PerfilComercio, Producto } from '../../utils/constants'
   import {
     calcularIniciales,
     construirLinkWhatsApp,
     detectarRedSocial,
     escapeHtml
-  } from '../utils/formatters'
+  } from '../../utils/formatters'
 
   const loadingState = document.getElementById(
     'loading-state'
@@ -219,13 +222,12 @@ import Footer from '../components/Footer.astro'
     'perfil-catalogo-grid'
   ) as HTMLDivElement
 
-  const urlParams = new URLSearchParams(window.location.search)
-  const id = urlParams.get('id')
+  const slug = window.location.pathname.split('/').filter(Boolean).pop()
 
-  if (!id) {
+  if (!slug) {
     showError()
   } else {
-    const perfil = await obtenerPerfilPorId(id)
+    const perfil = await obtenerPerfilPorSlug(slug)
     if (!perfil) {
       showError()
     } else {

@@ -1,66 +1,136 @@
 import { MAX_IMAGE_SIZE_BYTES } from './constants'
-import { supabase } from './supabase'
+import { isBlob, isFile } from './typeGuards'
 
-const BUCKET_NAME = 'comercio-local'
-
-export function leerArchivoBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      reject(
-        new Error(
-          `La imagen no puede superar los 2MB. El archivo pesa ${(file.size / 1024 / 1024).toFixed(1)}MB.`
-        )
-      )
-      return
-    }
+export async function compressImageToBlob(file: File): Promise<Blob> {
+  return await new Promise((resolve, reject) => {
     const reader = new FileReader()
-    reader.onload = (e) => resolve(e.target?.result as string)
     reader.onerror = () => reject(new Error('Error al leer el archivo.'))
+    reader.onload = () => {
+      const img = new Image()
+      img.onerror = () => reject(new Error('Error al procesar la imagen.'))
+      img.onload = () => {
+        const MAX_WIDTH = 1200
+        const MAX_HEIGHT = 1200
+        let width = img.width
+        let height = img.height
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            const newHeight = Math.round((height * MAX_WIDTH) / width)
+            height = newHeight
+            width = MAX_WIDTH
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            const newWidth = Math.round((width * MAX_HEIGHT) / height)
+            width = newWidth
+            height = MAX_HEIGHT
+          }
+        }
+
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx?.drawImage(img, 0, 0, width, height)
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return reject(new Error('No se pudo generar el blob.'))
+            resolve(blob)
+          },
+          'image/webp',
+          0.8
+        )
+      }
+      img.src = reader.result as string
+    }
     reader.readAsDataURL(file)
   })
 }
 
-function base64ABlob(base64: string): { blob: Blob; ext: string } {
-  const parts = base64.split(',')
+function dataURLToBlob(dataUrl: string): Blob {
+  const parts = dataUrl.split(',')
   const mime = parts[0].match(/:(.*?);/)?.[1] || 'image/jpeg'
-  const ext = mime.split('/')[1] || 'jpg'
-  const raw = atob(parts[1])
-  const arr = new Uint8Array(raw.length)
-  for (let i = 0; i < raw.length; i++) {
-    arr[i] = raw.charCodeAt(i)
+  const bstr = atob(parts[1])
+  let n = bstr.length
+  const u8arr = new Uint8Array(n)
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
   }
-  return { blob: new Blob([arr], { type: mime }), ext }
+  return new Blob([u8arr], { type: mime })
 }
 
-export async function subirImagenStorage(
-  base64: string,
+export async function subirArchivoStorage(
+  fileOrBlob: File | Blob | string,
   userId: string,
   nombre: string
 ): Promise<string> {
-  const { blob, ext } = base64ABlob(base64)
-  const path = `${userId}/${nombre}.${ext}`
+  let fileBlob: Blob
+  let filename: string
 
-  const { error } = await supabase.storage
-    .from(BUCKET_NAME)
-    .upload(path, blob, { upsert: true, contentType: blob.type })
+  if (typeof fileOrBlob === 'string') {
+    // data url
+    fileBlob = dataURLToBlob(fileOrBlob)
+    const ext = fileBlob.type.split('/')[1] || 'jpg'
+    filename = `${nombre}.${ext}`
+  } else {
+    fileBlob = fileOrBlob
+    const ext =
+      (fileOrBlob as File).name?.split('.')?.pop() ||
+      fileBlob.type.split('/')[1] ||
+      'webp'
+    filename = `${nombre}.${ext}`
+  }
 
-  if (error) throw error
+  // Validar tamaño (2MB)
+  if (fileBlob.size > MAX_IMAGE_SIZE_BYTES) {
+    throw new Error('La imagen supera los 2MB permitidos')
+  }
 
-  const {
-    data: { publicUrl }
-  } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path)
+  const formData = new FormData()
+  formData.append('file', fileBlob, filename)
+  formData.append('userId', userId)
+  formData.append('nombre', nombre)
 
-  return publicUrl
+  const res = await fetch('/api/upload-image', {
+    method: 'POST',
+    body: formData
+  })
+
+  const json = await res.json()
+  if (!res.ok) {
+    throw new Error(json?.error || 'Error al subir la imagen')
+  }
+
+  return json.publicUrl as string
 }
 
 export async function procesarImagen(
-  imagen: string | undefined,
+  imagen: string | File | Blob | undefined,
   userId: string,
   nombre: string
 ): Promise<string> {
   if (!imagen) return ''
-  if (imagen.startsWith('data:image/')) {
-    return subirImagenStorage(imagen, userId, nombre)
+
+  // Si ya es URL (pública), devolverla
+  if (
+    typeof imagen === 'string' &&
+    (imagen.startsWith('http') || imagen.startsWith('/'))
+  ) {
+    return imagen
   }
-  return imagen
+
+  // Si viene como data URL (base64), convertir a blob y subir
+  if (typeof imagen === 'string' && imagen.startsWith('data:image/')) {
+    return subirArchivoStorage(imagen, userId, nombre)
+  }
+
+  // Si es File o Blob, subir directamente usando type-guards
+  if (isFile(imagen) || isBlob(imagen)) {
+    return subirArchivoStorage(imagen, userId, nombre)
+  }
+
+  // Fallback: devolver string vacío
+  return ''
 }

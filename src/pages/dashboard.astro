@@ -734,21 +734,20 @@ import { CATEGORIAS } from '../utils/constants'
 </Layout>
 
 <script>
+  import { obtenerSesionActiva, cerrarSesion } from '../services/auth.service'
+  import { actualizarPerfil } from '../services/profile.service'
   import {
-    obtenerSesionActiva,
-    cerrarSesion,
-    actualizarPerfil,
     agregarProducto,
     editarProducto,
     eliminarProducto
-  } from '../utils/storage'
+  } from '../services/product.service'
   import {
     COLORES_CATEGORIAS,
     RESPALDOS_POR_RUBRO,
     RUBROS_FOTO_OPCIONAL
   } from '../utils/constants'
   import type { CategoriaRubro } from '../utils/constants'
-  import { leerArchivoBase64 } from '../utils/images'
+  import { compressImageToBlob } from '../utils/images'
   import { mostrarExito, mostrarError as mostrarErrorUI } from '../utils/ui'
   import { calcularIniciales, escapeHtml } from '../utils/formatters'
 
@@ -890,9 +889,9 @@ import { CATEGORIAS } from '../utils/constants'
     'contenedor-preview-catalogo'
   ) as HTMLDivElement
 
-  let base64Logo = ''
-  let base64Portada = ''
-  let base64ProdFoto = ''
+  let logoFile: File | Blob | undefined = undefined
+  let portadaFile: File | Blob | undefined = undefined
+  let prodFotoFile: File | Blob | undefined = undefined
 
   function mostrarError(msj: string) {
     mostrarErrorUI(alertaError, alertaErrorT, msj, alertaSuccess)
@@ -910,8 +909,9 @@ import { CATEGORIAS } from '../utils/constants'
     textareaHistoria.value = sesion.historia || ''
     charCounterHistoria.textContent = `${(sesion.historia || '').length} / 500`
     charCounter.textContent = `${sesion.descripcion.length} / 150`
-    base64Logo = sesion.fotoLogo || ''
-    base64Portada = sesion.fotoPortada || ''
+    // keep file variables null; existing stored URLs remain available in sesion
+    logoFile = undefined
+    portadaFile = undefined
     actualizarModoVista()
     actualizarHintRubro()
     renderizarCatalogo()
@@ -980,9 +980,12 @@ import { CATEGORIAS } from '../utils/constants'
       tusPublicacionesLabel.style.color = `rgb(${colores.rgb})`
     }
 
-    previewPortadaCard.src = sesion.fotoPortada || respaldos.portada
+    previewPortadaCard.src =
+      typeof sesion.fotoPortada === 'string'
+        ? sesion.fotoPortada
+        : respaldos.portada
 
-    if (sesion.fotoLogo) {
+    if (typeof sesion.fotoLogo === 'string' && sesion.fotoLogo) {
       previewLogoCard.src = sesion.fotoLogo
       previewLogoCard.classList.remove('hidden')
       inicialesCard.textContent = ''
@@ -998,8 +1001,15 @@ import { CATEGORIAS } from '../utils/constants'
     vistaCiudad.textContent = `📍 ${sesion.ciudad}${dirText}`
     vistaDesc.textContent = sesion.descripcion
 
-    const logoSrc = base64Logo || sesion.fotoLogo || ''
-    if (logoSrc) {
+    const logoSrc = sesion.fotoLogo || ''
+    if (logoFile) {
+      previewLogoInput.src = URL.createObjectURL(logoFile as Blob)
+      previewLogoInput.classList.remove('hidden')
+      placeholderLogo.classList.add('hidden')
+      previewLogoEdit.src = URL.createObjectURL(logoFile as Blob)
+      previewLogoEdit.classList.remove('hidden')
+      inicialesEdit.textContent = ''
+    } else if (logoSrc) {
       previewLogoInput.src = logoSrc
       previewLogoInput.classList.remove('hidden')
       placeholderLogo.classList.add('hidden')
@@ -1010,11 +1020,19 @@ import { CATEGORIAS } from '../utils/constants'
       previewLogoEdit.classList.add('hidden')
       inicialesEdit.textContent = iniciales
     }
-    const portadaSrc = base64Portada || sesion.fotoPortada || ''
-    if (portadaSrc) {
+
+    const portadaSrc =
+      typeof sesion.fotoPortada === 'string' ? sesion.fotoPortada : ''
+    if (portadaFile) {
+      previewPortadaInput.src = URL.createObjectURL(portadaFile as Blob)
+      previewPortadaInput.classList.remove('hidden')
+      placeholderPortada.classList.add('hidden')
+      previewPortadaCard.src = URL.createObjectURL(portadaFile as Blob)
+    } else if (portadaSrc) {
       previewPortadaInput.src = portadaSrc
       previewPortadaInput.classList.remove('hidden')
       placeholderPortada.classList.add('hidden')
+      previewPortadaCard.src = portadaSrc
     }
   }
 
@@ -1027,8 +1045,8 @@ import { CATEGORIAS } from '../utils/constants'
   btnCancelarEdPerfil?.addEventListener('click', () => {
     panelEdicion.classList.add('hidden')
     modoVistaPerfil.classList.remove('hidden')
-    base64Logo = sesion?.fotoLogo || ''
-    base64Portada = sesion?.fotoPortada || ''
+    logoFile = undefined
+    portadaFile = undefined
     actualizarModoVista()
   })
 
@@ -1036,17 +1054,19 @@ import { CATEGORIAS } from '../utils/constants'
     const file = inputLogo.files?.[0]
     if (!file) return
     try {
-      base64Logo = await leerArchivoBase64(file)
-      previewLogoInput.src = base64Logo
+      const compressed = await compressImageToBlob(file)
+      logoFile = compressed
+      const url = URL.createObjectURL(compressed as Blob)
+      previewLogoInput.src = url
       previewLogoInput.classList.remove('hidden')
       placeholderLogo.classList.add('hidden')
-      previewLogoEdit.src = base64Logo
+      previewLogoEdit.src = url
       previewLogoEdit.classList.remove('hidden')
       inicialesEdit.textContent = ''
     } catch (e: unknown) {
       mostrarError(e instanceof Error ? e.message : 'Error desconocido')
       inputLogo.value = ''
-      base64Logo = sesion?.fotoLogo || ''
+      logoFile = undefined
     }
   })
 
@@ -1054,15 +1074,17 @@ import { CATEGORIAS } from '../utils/constants'
     const file = inputPortada.files?.[0]
     if (!file) return
     try {
-      base64Portada = await leerArchivoBase64(file)
-      previewPortadaInput.src = base64Portada
+      const compressed = await compressImageToBlob(file)
+      portadaFile = compressed
+      const url = URL.createObjectURL(compressed as Blob)
+      previewPortadaInput.src = url
       previewPortadaInput.classList.remove('hidden')
       placeholderPortada.classList.add('hidden')
-      previewPortadaCard.src = base64Portada
+      previewPortadaCard.src = url
     } catch (e: unknown) {
       mostrarError(e instanceof Error ? e.message : 'Error desconocido')
       inputPortada.value = ''
-      base64Portada = sesion?.fotoPortada || ''
+      portadaFile = undefined
     }
   })
 
@@ -1078,8 +1100,8 @@ import { CATEGORIAS } from '../utils/constants'
       direccion: inputDireccion.value.trim(),
       sitioWeb: inputSitioWeb.value.trim(),
       historia: textareaHistoria.value.trim(),
-      fotoLogo: base64Logo,
-      fotoPortada: base64Portada
+      fotoLogo: logoFile,
+      fotoPortada: portadaFile
     })
     if (res.success) {
       sesion = (await obtenerSesionActiva())!
@@ -1113,14 +1135,15 @@ import { CATEGORIAS } from '../utils/constants'
     const file = inputProdFotoFile.files?.[0]
     if (!file) return
     try {
-      base64ProdFoto = await leerArchivoBase64(file)
-      previewProdFoto.src = base64ProdFoto
+      const compressed = await compressImageToBlob(file)
+      prodFotoFile = compressed
+      previewProdFoto.src = URL.createObjectURL(compressed as Blob)
       previewProdFoto.classList.remove('hidden')
       placeholderProdFoto.classList.add('hidden')
     } catch (e: unknown) {
       mostrarError(e instanceof Error ? e.message : 'Error desconocido')
       inputProdFotoFile.value = ''
-      base64ProdFoto = ''
+      prodFotoFile = undefined
     }
   })
 
@@ -1136,7 +1159,7 @@ import { CATEGORIAS } from '../utils/constants'
     const datos = {
       titulo: prodTitulo.value.trim(),
       precio: prodPrecio.value ? parseFloat(prodPrecio.value) : undefined,
-      foto: base64ProdFoto,
+      foto: prodFotoFile,
       descripcion: prodDesc.value.trim()
     }
     if (mode === 'edit' && editingId) {
@@ -1174,7 +1197,7 @@ import { CATEGORIAS } from '../utils/constants'
       'background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)'
     btnCancelarEdicion.classList.add('hidden')
     charCounterProd.textContent = '0 / 120'
-    base64ProdFoto = ''
+    prodFotoFile = undefined
     if (previewProdFoto) {
       previewProdFoto.src = ''
       previewProdFoto.classList.add('hidden')
@@ -1243,10 +1266,10 @@ import { CATEGORIAS } from '../utils/constants'
       const desc = escapeHtml(prod.descripcion)
       const precio = prod.precio
       const fotoValida =
-        prod.foto &&
+        typeof prod.foto === 'string' &&
         (prod.foto.startsWith('https://') ||
           prod.foto.startsWith('data:image/'))
-      const fotoUrl = fotoValida ? escapeHtml(prod.foto!) : ''
+      const fotoUrl = fotoValida ? escapeHtml(prod.foto as string) : ''
       const priceText =
         precio != null
           ? `<span class="font-bold text-xs px-2 py-0.5 rounded-lg shrink-0" style="color: rgb(${categoriaColor}); background: rgba(${categoriaColor},0.1); border: 1px solid rgba(${categoriaColor},0.25)">$${precio}</span>`
@@ -1281,9 +1304,10 @@ import { CATEGORIAS } from '../utils/constants'
             prodPrecio.value = prod.precio != null ? String(prod.precio) : ''
             prodDesc.value = prod.descripcion
             charCounterProd.textContent = `${prod.descripcion.length} / 120`
-            base64ProdFoto = prod.foto || ''
-            if (base64ProdFoto) {
-              previewProdFoto.src = base64ProdFoto
+            prodFotoFile = undefined
+            if (prod.foto) {
+              if (typeof prod.foto === 'string') previewProdFoto.src = prod.foto
+              else previewProdFoto.src = URL.createObjectURL(prod.foto as Blob)
               previewProdFoto.classList.remove('hidden')
               placeholderProdFoto.classList.add('hidden')
             }
@@ -1342,10 +1366,10 @@ import { CATEGORIAS } from '../utils/constants'
       const desc = escapeHtml(prod.descripcion)
       const precio = prod.precio
       const fotoValida =
-        prod.foto &&
+        typeof prod.foto === 'string' &&
         (prod.foto.startsWith('https://') ||
           prod.foto.startsWith('data:image/'))
-      const fotoUrl = fotoValida ? escapeHtml(prod.foto!) : ''
+      const fotoUrl = fotoValida ? escapeHtml(prod.foto as string) : ''
       const priceTag =
         precio != null
           ? `<span class="font-bold text-xs px-2 py-0.5 rounded-lg shrink-0" style="color: rgb(${categoriaColor}); background: rgba(${categoriaColor},0.1); border: 1px solid rgba(${categoriaColor},0.25)">$${precio}</span>`

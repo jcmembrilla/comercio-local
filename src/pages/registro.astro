@@ -328,10 +328,13 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
 </Layout>
 
 <script>
-  import { registrarUsuario, obtenerSesionActiva } from '../utils/storage'
+  import {
+    registrarUsuario,
+    obtenerSesionActiva
+  } from '../services/auth.service'
   import type { CategoriaRubro } from '../utils/constants'
   import { DOMINIOS_DESCARTABLES } from '../utils/constants'
-  import { leerArchivoBase64 } from '../utils/images'
+  import { compressImageToBlob } from '../utils/images'
   import { mostrarError as mostrarErrorUI } from '../utils/ui'
 
   const sesion = await obtenerSesionActiva()
@@ -387,8 +390,8 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
     'placeholderPortada'
   ) as HTMLDivElement
 
-  let base64Logo = ''
-  let base64Portada = ''
+  let logoFile: File | Blob | undefined = undefined
+  let portadaFile: File | Blob | undefined = undefined
 
   function mostrarError(msj: string) {
     mostrarErrorUI(alertaError, alertaErrorTexto, msj)
@@ -399,14 +402,15 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
     const file = inputLogo.files?.[0]
     if (!file) return
     try {
-      base64Logo = await leerArchivoBase64(file)
-      previewLogo.src = base64Logo
+      const compressed = await compressImageToBlob(file)
+      logoFile = compressed
+      previewLogo.src = URL.createObjectURL(compressed)
       previewLogo.classList.remove('hidden')
       placeholderLogo.classList.add('hidden')
     } catch (err: unknown) {
       mostrarError(err instanceof Error ? err.message : 'Error desconocido')
       inputLogo.value = ''
-      base64Logo = ''
+      logoFile = undefined
     }
   })
 
@@ -414,14 +418,15 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
     const file = inputPortada.files?.[0]
     if (!file) return
     try {
-      base64Portada = await leerArchivoBase64(file)
-      previewPortada.src = base64Portada
+      const compressed = await compressImageToBlob(file)
+      portadaFile = compressed
+      previewPortada.src = URL.createObjectURL(compressed)
       previewPortada.classList.remove('hidden')
       placeholderPortada.classList.add('hidden')
     } catch (err: unknown) {
       mostrarError(err instanceof Error ? err.message : 'Error desconocido')
       inputPortada.value = ''
-      base64Portada = ''
+      portadaFile = undefined
     }
   })
 
@@ -524,6 +529,9 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
       'direccion'
     ) as HTMLInputElement
 
+    const loadingScreen = document.getElementById('loading-screen')
+    if (loadingScreen) loadingScreen.classList.remove('hidden')
+
     const res = await registrarUsuario(email, password, {
       nombreEmprendimiento: nombre,
       categoria,
@@ -533,12 +541,24 @@ import { CATEGORIAS, CIUDADES_PREDEFINIDAS } from '../utils/constants'
       direccion: direccionInput.value.trim(),
       sitioWeb: '',
       historia: '',
-      fotoLogo: base64Logo,
-      fotoPortada: base64Portada
+      fotoLogo: logoFile,
+      fotoPortada: portadaFile
     })
 
+    if (loadingScreen) loadingScreen.classList.add('hidden')
+
     if (res.success) {
-      window.location.href = '/dashboard'
+      if (res.requireEmailConfirmation) {
+        // Show success message and hide the form
+        form.classList.add('hidden')
+        alertaError.className =
+          'text-xs p-4 rounded-2xl mb-6 flex items-start gap-2.5 bg-emerald-900/40 border border-emerald-500/50 text-emerald-400'
+        alertaError.innerHTML = `<span class="font-bold">✓</span><span id="alerta-registro-texto">${res.message}</span>`
+        alertaError.classList.remove('hidden')
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else {
+        window.location.href = '/dashboard'
+      }
     } else {
       mostrarError(res.message)
     }
