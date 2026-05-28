@@ -235,6 +235,10 @@ import { CATEGORIAS } from '../utils/constants'
       const urlPortada = portadaValida ? escapeHtml(pub.fotoPortada as string) : respaldos.portada
       const logoValido = typeof pub.fotoLogo === 'string' && (pub.fotoLogo.startsWith('https://') || pub.fotoLogo.startsWith('data:image/'))
       const urlLogo = logoValido ? escapeHtml(pub.fotoLogo as string) : ''
+      const whatsappNum = pub.whatsapp ? escapeHtml(pub.whatsapp) : ''
+      const whatsappHtml = whatsappNum
+        ? `<span class="text-[10px]" style="color: var(--tertiary)">•</span><span class="text-[10px] font-medium" style="color: var(--secondary)">📞 ${whatsappNum}</span>`
+        : ''
 
       const htmlAvatar = urlLogo
         ? `<img src="${urlLogo}" alt="${nombre}" loading="lazy" class="w-full h-full object-cover shrink-0" />`
@@ -265,6 +269,7 @@ import { CATEGORIAS } from '../utils/constants'
                 <span class="text-[10px] uppercase font-bold tracking-wider" style="color: var(--primary); opacity: 0.7">${categoria}</span>
                 <span class="text-[10px]" style="color: var(--tertiary)">•</span>
                 <span class="text-[10px] font-medium" style="color: var(--secondary)">📍 ${ciudad}</span>
+                ${whatsappHtml}
               </div>
             </div>
           </div>
@@ -273,7 +278,7 @@ import { CATEGORIAS } from '../utils/constants'
           </p>
         </div>
         <a
-          href="/perfil/${pub.slug}"
+          href="/perfil/${pub.slug || pub.id}"
           class="w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors mb-2 cursor-pointer"
           style="background: var(--button); border: 1px solid var(--border-stronger); color: var(--primary)"
         >

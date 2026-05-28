@@ -113,6 +113,10 @@ import Footer from '../../components/Footer.astro'
                 rel="noopener noreferrer"
                 class="hidden text-xs mt-1.5 transition-colors"
                 style="color: var(--tertiary)"></a>
+              <span
+                id="perfil-whatsapp"
+                class="hidden text-xs mt-1"
+                style="color: var(--tertiary)"></span>
             </div>
 
             <a
@@ -302,6 +306,14 @@ import Footer from '../../components/Footer.astro'
       p.whatsapp,
       p.nombreEmprendimiento
     )
+
+    const spanWhatsapp = document.getElementById(
+      'perfil-whatsapp'
+    ) as HTMLSpanElement
+    if (p.whatsapp) {
+      spanWhatsapp.textContent = `📞 ${p.whatsapp}`
+      spanWhatsapp.classList.remove('hidden')
+    }
 
     gridCatalogo.innerHTML = ''
 

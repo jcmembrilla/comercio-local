@@ -541,11 +541,32 @@ import { CATEGORIAS } from '../utils/constants'
             >
           </div>
 
+          <button
+            type="button"
+            id="btn-toggle-form-producto"
+            class="w-full py-3.5 rounded-2xl text-sm font-bold transition-all active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 mb-6"
+            style="background: var(--surface); border: 2px dashed var(--border-strong); color: var(--primary)"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"></path>
+            </svg>
+            Crear una nueva publicación
+          </button>
+
           <form
             id="form-producto"
             data-mode="add"
             data-editing-id=""
-            class="space-y-4 p-4 rounded-2xl mb-6"
+            class="hidden space-y-4 p-4 rounded-2xl mb-6"
             style="background: var(--surface); border: 1px solid var(--border)"
           >
             <div class="flex justify-between items-center">
@@ -559,10 +580,10 @@ import { CATEGORIAS } from '../utils/constants'
               <button
                 type="button"
                 id="btn-cancelar-edicion"
-                class="hidden text-[10px] px-2 py-1 rounded-lg cursor-pointer"
+                class="text-[10px] px-2 py-1 rounded-lg cursor-pointer transition-colors"
                 style="background: var(--elevated); color: var(--tertiary); border: 1px solid var(--border-strong)"
               >
-                Cancelar Edición
+                Cancelar
               </button>
             </div>
 
@@ -865,6 +886,9 @@ import { CATEGORIAS } from '../utils/constants'
   ) as HTMLButtonElement
   const btnCancelarEdicion = document.getElementById(
     'btn-cancelar-edicion'
+  ) as HTMLButtonElement
+  const btnToggleFormProducto = document.getElementById(
+    'btn-toggle-form-producto'
   ) as HTMLButtonElement
   const listaProductos = document.getElementById(
     'lista-productos'
@@ -1169,6 +1193,8 @@ import { CATEGORIAS } from '../utils/constants'
       if (res.success) {
         sesion = (await obtenerSesionActiva())!
         resetFormProducto()
+        formProducto.classList.add('hidden')
+        btnToggleFormProducto?.classList.remove('hidden')
         mostrarExito(alertaSuccess, alertaSuccessT, res.message, alertaError)
         renderizarCatalogo()
         renderizarPreviewCatalogo()
@@ -1178,6 +1204,8 @@ import { CATEGORIAS } from '../utils/constants'
       if (res.success) {
         sesion = (await obtenerSesionActiva())!
         resetFormProducto()
+        formProducto.classList.add('hidden')
+        btnToggleFormProducto?.classList.remove('hidden')
         mostrarExito(alertaSuccess, alertaSuccessT, res.message, alertaError)
         renderizarCatalogo()
         renderizarPreviewCatalogo()
@@ -1185,7 +1213,17 @@ import { CATEGORIAS } from '../utils/constants'
     }
   })
 
-  btnCancelarEdicion?.addEventListener('click', resetFormProducto)
+  btnToggleFormProducto?.addEventListener('click', () => {
+    resetFormProducto()
+    formProducto.classList.remove('hidden')
+    btnToggleFormProducto.classList.add('hidden')
+  })
+
+  btnCancelarEdicion?.addEventListener('click', () => {
+    resetFormProducto()
+    formProducto.classList.add('hidden')
+    btnToggleFormProducto?.classList.remove('hidden')
+  })
 
   function resetFormProducto() {
     formProducto.reset()
@@ -1197,7 +1235,6 @@ import { CATEGORIAS } from '../utils/constants'
       'w-full py-2.5 rounded-xl text-xs font-bold transition-all active:scale-[0.99] cursor-pointer'
     btnSubmitProducto.style.cssText =
       'background: var(--elevated); color: var(--primary); border: 1px solid var(--border-strong)'
-    btnCancelarEdicion.classList.add('hidden')
     charCounterProd.textContent = '0 / 120'
     prodFotoFile = undefined
     if (previewProdFoto) {
@@ -1262,7 +1299,7 @@ import { CATEGORIAS } from '../utils/constants'
     sesion.productos.forEach((prod) => {
       const item = document.createElement('div')
       item.className =
-        'flex items-center justify-between gap-4 p-3.5 rounded-2xl text-xs transition-all'
+        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-3.5 rounded-2xl text-xs transition-all'
       item.style.cssText = `background: var(--surface); border: 1px solid var(--border-strong); border-left: 3px solid rgba(${categoriaColor}, 0.35)`
       const titulo = escapeHtml(prod.titulo)
       const desc = escapeHtml(prod.descripcion)
@@ -1281,14 +1318,14 @@ import { CATEGORIAS } from '../utils/constants'
         : `<div class="w-12 h-12 rounded-xl shrink-0 flex items-center justify-center text-lg" style="border: 1px solid var(--border-strong); background: var(--elevated); color: var(--quaternary)">📄</div>`
       const prodId = escapeHtml(String(prod.id))
       item.innerHTML = `
-        <div class="flex items-center gap-3 overflow-hidden grow">
+        <div class="flex items-center gap-3 overflow-hidden w-full sm:w-auto grow">
           ${imgHtml}
           <div class="overflow-hidden space-y-0.5">
             <div class="flex items-center gap-2"><p class="font-bold truncate" style="color: var(--primary)">${titulo}</p>${priceText}</div>
             <p class="text-[10px] truncate" style="color: var(--quaternary)">${desc}</p>
           </div>
         </div>
-        <div class="flex gap-2 shrink-0">
+        <div class="flex gap-2 shrink-0 w-full sm:w-auto justify-end border-t sm:border-none border-zinc-500/20 pt-2 sm:pt-0">
           <button data-prod-id="${prodId}" class="btn-editar text-[10px] px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer transition-colors" style="color: rgb(${categoriaColor}); background: rgba(${categoriaColor},0.08); border: 1px solid rgba(${categoriaColor},0.2)">Editar</button>
           <button data-prod-id="${prodId}" class="btn-eliminar text-[10px] px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer transition-colors" style="color: #dc2626; background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.2)">Borrar</button>
         </div>`
@@ -1320,7 +1357,8 @@ import { CATEGORIAS } from '../utils/constants'
             btnSubmitProducto.className =
               'w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl text-xs font-bold transition-all active:scale-[0.99] cursor-pointer'
             btnSubmitProducto.style.cssText = ''
-            btnCancelarEdicion.classList.remove('hidden')
+            formProducto.classList.remove('hidden')
+            btnToggleFormProducto?.classList.add('hidden')
             formProducto.scrollIntoView({ behavior: 'smooth', block: 'center' })
           }
         }
@@ -1346,8 +1384,11 @@ import { CATEGORIAS } from '../utils/constants'
           mostrarExito(alertaSuccess, alertaSuccessT, res.message, alertaError)
           if (
             String(formProducto.getAttribute('data-editing-id')) === String(id)
-          )
+          ) {
             resetFormProducto()
+            formProducto.classList.add('hidden')
+            btnToggleFormProducto?.classList.remove('hidden')
+          }
         } else mostrarError(res.message)
       })
     })

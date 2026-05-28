@@ -179,7 +179,21 @@ export async function obtenerPerfilPorSlug(
   const { data, error } = res
   if (error && (error as unknown as { code?: string }).code === '42703') {
     dbHasSlugColumn = false
+    if (
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        slug
+      )
+    ) {
+      return await obtenerPerfilPorId(slug)
+    }
     return null
+  }
+
+  if (
+    !data &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
+  ) {
+    return await obtenerPerfilPorId(slug)
   }
 
   if (error || !data) return null
@@ -218,8 +232,26 @@ export async function actualizarPerfil(
   let fotoLogo: string
   let fotoPortada: string
   try {
-    fotoLogo = await procesarImagen(datos.fotoLogo, id, 'logo')
-    fotoPortada = await procesarImagen(datos.fotoPortada, id, 'portada')
+    // Solo hacer fetch de valores actuales si falta al menos un campo
+    const necesitaFetch =
+      datos.fotoLogo === undefined || datos.fotoPortada === undefined
+    const { data: perfilActual } = necesitaFetch
+      ? await supabase
+          .from('profiles')
+          .select('foto_logo, foto_portada')
+          .eq('id', id)
+          .maybeSingle()
+      : { data: null }
+
+    fotoLogo =
+      datos.fotoLogo !== undefined
+        ? await procesarImagen(datos.fotoLogo, id, 'logo')
+        : perfilActual?.foto_logo || ''
+
+    fotoPortada =
+      datos.fotoPortada !== undefined
+        ? await procesarImagen(datos.fotoPortada, id, 'portada')
+        : perfilActual?.foto_portada || ''
   } catch (e: unknown) {
     return {
       success: false,

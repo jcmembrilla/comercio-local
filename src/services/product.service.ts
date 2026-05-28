@@ -4,10 +4,26 @@ import { RUBROS_FOTO_OPCIONAL } from '../utils/constants'
 import { procesarImagen } from '../utils/images'
 import { traducirError } from './error.service'
 
-export async function agregarProducto(
+type ProductoData = Omit<Producto, 'id' | 'foto'> & {
+  foto?: string | File | Blob
+}
+
+interface ValidacionProducto {
+  valido: true
+  categoria: CategoriaRubro
+  tieneFoto: boolean
+  tieneDescripcion: boolean
+}
+
+interface ValidacionError {
+  valido: false
+  mensaje: string
+}
+
+async function validarProducto(
   usuarioId: string,
-  producto: Omit<Producto, 'id' | 'foto'> & { foto?: string | File | Blob }
-): Promise<{ success: boolean; message: string; producto?: Producto }> {
+  datos: ProductoData
+): Promise<ValidacionProducto | ValidacionError> {
   const { data: perfil } = await supabase
     .from('profiles')
     .select('categoria')
@@ -15,60 +31,70 @@ export async function agregarProducto(
     .maybeSingle()
 
   if (!perfil) {
-    return { success: false, message: 'Usuario no encontrado.' }
+    return { valido: false, mensaje: 'Usuario no encontrado.' }
   }
 
   const categoria = perfil.categoria as CategoriaRubro
   const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria)
   const tieneFoto = !!(
-    producto.foto &&
-    (typeof producto.foto === 'string' ? producto.foto.trim().length > 0 : true)
+    datos.foto &&
+    (typeof datos.foto === 'string' ? datos.foto.trim().length > 0 : true)
   )
-  const tieneDescripcion = !!(
-    producto.descripcion && producto.descripcion.trim()
-  )
+  const tieneDescripcion = !!(datos.descripcion && datos.descripcion.trim())
 
-  if (!producto.titulo.trim()) {
+  if (!datos.titulo.trim()) {
     return {
-      success: false,
-      message: 'El título de la publicación es obligatorio.'
+      valido: false,
+      mensaje: 'El título de la publicación es obligatorio.'
     }
   }
 
   if (fotoOpcional) {
     if (!tieneDescripcion) {
       return {
-        success: false,
-        message:
+        valido: false,
+        mensaje:
           'Para este rubro, la descripción es obligatoria. Podés agregar una foto o no, pero describí qué hacés.'
       }
     }
   } else {
     if (!tieneFoto && !tieneDescripcion) {
       return {
-        success: false,
-        message:
+        valido: false,
+        mensaje:
           'Debés subir al menos una foto o escribir una descripción para publicar.'
       }
     }
     if (!tieneFoto) {
       return {
-        success: false,
-        message:
+        valido: false,
+        mensaje:
           'Para este rubro, la foto es obligatoria. Agregá una imagen del producto o trabajo.'
       }
     }
     if (!tieneDescripcion) {
       return {
-        success: false,
-        message:
+        valido: false,
+        mensaje:
           'La descripción es obligatoria. Contá de qué se trata este producto o servicio.'
       }
     }
   }
 
+  return { valido: true, categoria, tieneFoto, tieneDescripcion }
+}
+
+export async function agregarProducto(
+  usuarioId: string,
+  producto: ProductoData
+): Promise<{ success: boolean; message: string; producto?: Producto }> {
+  const validacion = await validarProducto(usuarioId, producto)
+  if (!validacion.valido) {
+    return { success: false, message: validacion.mensaje }
+  }
+
   let fotoUrl = ''
-  if (tieneFoto && producto.foto) {
+  if (validacion.tieneFoto && producto.foto) {
     try {
       fotoUrl = await procesarImagen(
         producto.foto,
@@ -121,65 +147,15 @@ export async function agregarProducto(
 export async function editarProducto(
   usuarioId: string,
   productoId: string,
-  nuevosDatos: Omit<Producto, 'id' | 'foto'> & { foto?: string | File | Blob }
+  nuevosDatos: ProductoData
 ): Promise<{ success: boolean; message: string }> {
-  const { data: perfil } = await supabase
-    .from('profiles')
-    .select('categoria')
-    .eq('id', usuarioId)
-    .maybeSingle()
-
-  if (!perfil) {
-    return { success: false, message: 'Usuario no encontrado.' }
-  }
-
-  const categoria = perfil.categoria as CategoriaRubro
-  const fotoOpcional = RUBROS_FOTO_OPCIONAL.includes(categoria)
-  const tieneFoto = !!(
-    nuevosDatos.foto &&
-    (typeof nuevosDatos.foto === 'string'
-      ? nuevosDatos.foto.trim().length > 0
-      : true)
-  )
-  const tieneDescripcion = !!(
-    nuevosDatos.descripcion && nuevosDatos.descripcion.trim()
-  )
-
-  if (!nuevosDatos.titulo.trim()) {
-    return {
-      success: false,
-      message: 'El título de la publicación es obligatorio.'
-    }
-  }
-
-  if (fotoOpcional) {
-    if (!tieneDescripcion) {
-      return {
-        success: false,
-        message: 'Para este rubro, la descripción es obligatoria.'
-      }
-    }
-  } else {
-    if (!tieneFoto && !tieneDescripcion) {
-      return {
-        success: false,
-        message:
-          'Debés subir al menos una foto o escribir una descripción para publicar.'
-      }
-    }
-    if (!tieneFoto) {
-      return {
-        success: false,
-        message: 'Para este rubro, la foto es obligatoria.'
-      }
-    }
-    if (!tieneDescripcion) {
-      return { success: false, message: 'La descripción es obligatoria.' }
-    }
+  const validacion = await validarProducto(usuarioId, nuevosDatos)
+  if (!validacion.valido) {
+    return { success: false, message: validacion.mensaje }
   }
 
   let fotoUrl = ''
-  if (tieneFoto && nuevosDatos.foto) {
+  if (validacion.tieneFoto && nuevosDatos.foto) {
     try {
       fotoUrl = await procesarImagen(
         nuevosDatos.foto,

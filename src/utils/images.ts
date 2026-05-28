@@ -1,5 +1,6 @@
 import { MAX_IMAGE_SIZE_BYTES } from './constants'
 import { isBlob, isFile } from './typeGuards'
+import { supabase } from './supabase'
 
 export async function compressImageToBlob(file: File): Promise<Blob> {
   return await new Promise((resolve, reject) => {
@@ -67,20 +68,12 @@ export async function subirArchivoStorage(
   nombre: string
 ): Promise<string> {
   let fileBlob: Blob
-  let filename: string
 
   if (typeof fileOrBlob === 'string') {
     // data url
     fileBlob = dataURLToBlob(fileOrBlob)
-    const ext = fileBlob.type.split('/')[1] || 'jpg'
-    filename = `${nombre}.${ext}`
   } else {
     fileBlob = fileOrBlob
-    const ext =
-      (fileOrBlob as File).name?.split('.')?.pop() ||
-      fileBlob.type.split('/')[1] ||
-      'webp'
-    filename = `${nombre}.${ext}`
   }
 
   // Validar tamaño (2MB)
@@ -88,22 +81,21 @@ export async function subirArchivoStorage(
     throw new Error('La imagen supera los 2MB permitidos')
   }
 
-  const formData = new FormData()
-  formData.append('file', fileBlob, filename)
-  formData.append('userId', userId)
-  formData.append('nombre', nombre)
+  const ext = fileBlob.type.split('/')[1] || 'webp'
+  const path = `${userId}/${nombre}.${ext}`
+  const BUCKET_NAME = 'comercio-local'
 
-  const res = await fetch('/api/upload-image', {
-    method: 'POST',
-    body: formData
-  })
+  const { error: uploadError } = await supabase.storage
+    .from(BUCKET_NAME)
+    .upload(path, fileBlob, { upsert: true, contentType: fileBlob.type })
 
-  const json = await res.json()
-  if (!res.ok) {
-    throw new Error(json?.error || 'Error al subir la imagen')
+  if (uploadError) {
+    throw new Error(uploadError.message || 'Error al subir la imagen')
   }
 
-  return json.publicUrl as string
+  const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path)
+
+  return data.publicUrl
 }
 
 export async function procesarImagen(

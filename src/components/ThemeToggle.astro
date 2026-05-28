@@ -45,8 +45,8 @@
       try {
         const stored = localStorage.getItem('comercio_local_theme')
         if (stored === 'light' || stored === 'dark') return stored
-      } catch (e) {
-        void e
+      } catch {
+        // noop
       }
       return 'light'
     }
@@ -54,16 +54,16 @@
     function aplicarTema(tema) {
       try {
         document.documentElement.classList.toggle('light', tema === 'light')
-      } catch (e) {
-        void e
+      } catch {
+        // noop
       }
     }
 
     function cambiarTema(tema) {
       try {
         localStorage.setItem('comercio_local_theme', tema)
-      } catch (e) {
-        void e
+      } catch {
+        // noop
       }
       aplicarTema(tema)
     }
