@@ -97,7 +97,7 @@ export async function obtenerPublicaciones(
   let { data, error } = res
 
   // Si falla por columna inexistente (42703), reintentar sin slug y memorizar la ausencia
-  if (error && (error as any).code === '42703') {
+  if (error && (error as unknown as { code?: string }).code === '42703') {
     dbHasSlugColumn = false
     res = await makeQuery(false, ciudadFiltro)
     data = res.data
@@ -110,7 +110,7 @@ export async function obtenerPublicaciones(
         'Error obteniendo publicaciones:',
         JSON.parse(JSON.stringify(error))
       )
-    } catch (e) {
+    } catch {
       console.error('Error obteniendo publicaciones:', error)
     }
     if (import.meta.env.MODE === 'development') throw error
@@ -145,7 +145,7 @@ export async function obtenerPerfilPorId(
   }
 
   let { data, error } = res
-  if (error && (error as any).code === '42703') {
+  if (error && (error as unknown as { code?: string }).code === '42703') {
     dbHasSlugColumn = false
     const retry = await supabase
       .from('profiles')
@@ -176,8 +176,8 @@ export async function obtenerPerfilPorSlug(
     .eq('slug', slug)
     .maybeSingle()
 
-  let { data, error } = res
-  if (error && (error as any).code === '42703') {
+  const { data, error } = res
+  if (error && (error as unknown as { code?: string }).code === '42703') {
     dbHasSlugColumn = false
     return null
   }

@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css'
 import Toast from '../components/Toast.astro'
-import ThemeToggle from '../components/ThemeToggle.astro'
 
 interface Props {
   title: string
@@ -53,9 +52,6 @@ const {
     class="min-h-screen font-sans antialiased"
     style="background: var(--body-bg); color: var(--primary)"
   >
-    <div class="fixed top-4 right-4 z-50">
-      <ThemeToggle />
-    </div>
     <slot />
     <Toast />
   </body>

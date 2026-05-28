@@ -7,7 +7,7 @@
 >
   <svg
     id="icono-sol"
-    class="w-4 h-4"
+    class="w-4 h-4 hidden"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -34,36 +34,55 @@
     ></path>
   </svg>
 </button>
-<script>
+
+<script is:inline>
   ;(function () {
-    const s = document.getElementById('icono-sol'),
-      l = document.getElementById('icono-luna')
-    if (!s || !l) return
-    const t = localStorage.getItem('comercio_local_theme')
-    if (t === 'dark') {
-      s.classList.remove('hidden')
-      l.classList.add('hidden')
-    } else {
-      s.classList.add('hidden')
-      l.classList.remove('hidden')
+    const btn = document.getElementById('btn-tema')
+    const iconoSol = document.getElementById('icono-sol')
+    const iconoLuna = document.getElementById('icono-luna')
+
+    function obtenerTema() {
+      try {
+        const stored = localStorage.getItem('comercio_local_theme')
+        if (stored === 'light' || stored === 'dark') return stored
+      } catch (e) {
+        void e
+      }
+      return 'light'
     }
-  })()
-</script>
 
-<script>
-  import { obtenerTema, cambiarTema } from '../utils/theme'
+    function aplicarTema(tema) {
+      try {
+        document.documentElement.classList.toggle('light', tema === 'light')
+      } catch (e) {
+        void e
+      }
+    }
 
-  const btn = document.getElementById('btn-tema') as HTMLButtonElement
-  const iconoSol = document.getElementById('icono-sol') as HTMLElement
-  const iconoLuna = document.getElementById('icono-luna') as HTMLElement
+    function cambiarTema(tema) {
+      try {
+        localStorage.setItem('comercio_local_theme', tema)
+      } catch (e) {
+        void e
+      }
+      aplicarTema(tema)
+    }
 
-  if (btn && iconoSol && iconoLuna) {
-    btn.addEventListener('click', () => {
+    function syncIcons(tema) {
+      if (!iconoSol || !iconoLuna) return
+      iconoSol.classList.toggle('hidden', tema === 'light')
+      iconoLuna.classList.toggle('hidden', tema === 'dark')
+    }
+
+    const inicial = obtenerTema()
+    aplicarTema(inicial)
+    syncIcons(inicial)
+
+    btn?.addEventListener('click', () => {
       const actual = obtenerTema()
       const nuevo = actual === 'dark' ? 'light' : 'dark'
       cambiarTema(nuevo)
-      iconoSol.classList.toggle('hidden', nuevo === 'light')
-      iconoLuna.classList.toggle('hidden', nuevo === 'dark')
+      syncIcons(nuevo)
     })
-  }
+  })()
 </script>
